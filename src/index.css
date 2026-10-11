@@ -1,0 +1,130 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Cormorant Garamond', Georgia, serif;
+    --font-display: 'Cinzel', Georgia, serif;
+    --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    
+    /* Luxury Wedding Palette */
+    --color-gold: #D4AF37;
+    --color-gold-hover: #B89726;
+    --color-gold-light: #FBF6E9;
+    --color-ivory: #FAF8F5;
+    --color-champagne: #F5EFEB;
+    --color-noir: #1C1917;
+    --color-charcoal: #292524;
+    --color-stone: #78716C;
+    --color-cream: #FFFDF9;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-ivory);
+    color: var(--color-noir);
+    overflow-x: clip;
+    letter-spacing: -0.01em;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+
+  h1, h2, h3, .font-serif {
+    font-family: var(--font-serif);
+    font-variant-numeric: lining-nums tabular-nums;
+    font-feature-settings: "lnum" 1, "tnum" 1;
+  }
+
+  .font-cinzel {
+    font-family: var(--font-display);
+  }
+
+  /* Clean, modern, crisp counting and price typography */
+  .font-numeric,
+  .font-num,
+  [data-numeric] {
+    font-family: var(--font-sans) !important;
+    font-variant-numeric: lining-nums tabular-nums !important;
+    font-feature-settings: "lnum" 1, "tnum" 1 !important;
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #F5EFEB;
+}
+::-webkit-scrollbar-thumb {
+  background: #D4AF37;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B89726;
+}
+
+/* Glassmorphism & Gold Gradients */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #D4AF37 0%, #F5DEB3 50%, #B89726 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #D4AF37 0%, #C5A028 100%);
+}
+
+.champagne-gradient-bg {
+  background: linear-gradient(180deg, #FFFDF9 0%, #FAF8F5 50%, #F5EFEB 100%);
+}
+
+.gold-border {
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+.gold-border-active {
+  border-color: rgba(212, 175, 55, 0.8);
+}
+
+.gold-glow {
+  box-shadow: 0 10px 30px -5px rgba(212, 175, 55, 0.2);
+}
+
+/* Print styles for quotations and invoices */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
+
+/* Hillbrook Estate Style Hero Animations */
+@keyframes kenburns {
+  0% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.02) translate3d(0, -1%, 0);
+  }
+  100% {
+    transform: scale(1.08) translate3d(0, 0, 0);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 24s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-kenburns {
+    animation: none !important;
+    transform: none !important;
+  }
+}

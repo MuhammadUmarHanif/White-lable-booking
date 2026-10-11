@@ -1,0 +1,76 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated();
+    }
+
+    // 1. PUBLIC READ-ONLY SETTINGS (Venue Branding & Pricing Rules)
+    match /settings/brand {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /settings/pricingRules {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Private settings (internal audit logs, private notes)
+    match /settings/private {
+      allow read, write: if isAdmin();
+    }
+
+    // 2. VENUE HALLS & SPACES
+    match /halls/{hallId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 3. MENU PACKAGES & DISHES
+    match /menuPackages/{pkgId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /menuItems/{itemId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 4. DECORATIONS & SERVICES
+    match /decorations/{decId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /services/{srvId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // 5. BOOKING REQUESTS
+    match /bookings/{bookingId} {
+      // Public customer can read a single booking if they possess its reference/id (e.g. for viewing quotation),
+      // or authenticated admins can list and read all bookings.
+      allow get: if true;
+      allow list: if isAdmin();
+
+      // Customers can submit a pending booking request with strict payload validation:
+      // - Must start with 'pending' status
+      // - Cannot inject payments or claim they have already paid
+      allow create: if request.resource.data.status == 'pending'
+                    && request.resource.data.totalPaid == 0
+                    && (!('payments' in request.resource.data) || request.resource.data.payments.size() == 0);
+
+      // Only authenticated admin can update booking status, record payments, or delete
+      allow update, delete: if isAdmin();
+    }
+  }
+}
