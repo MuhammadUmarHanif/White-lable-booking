@@ -6,12 +6,26 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+firebase-debug.log*
 
+# Dependencies & Build Output
 node_modules
 dist
 dist-ssr
+
+# Environment Variables & Secrets
+.env
+.env.*
+!.env.example
 *.local
-.env.local
+*.pem
+*.key
+serviceAccount*.json
+*service-account*.json
+
+# Firebase Cache & Deployment Local Data
+.firebase/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -23,7 +37,7 @@ dist-ssr
 *.sln
 *.sw?
 
-# Playwright
+# Playwright Test Artifacts
 /test-results/
 /playwright-report/
 /blob-report/
