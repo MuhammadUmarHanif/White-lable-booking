@@ -262,26 +262,26 @@ export const AdminMenuPage: React.FC = () => {
 
         {/* Packages View */}
         {activeTab === 'packages' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
             {menuPackages.map((pkg) => (
               <div
                 key={pkg.id}
-                className="bg-white rounded-3xl p-6 border border-stone-200 shadow-sm flex flex-col justify-between space-y-4 hover:border-[#D4AF37]/50 transition-all"
+                className="bg-white rounded-2xl sm:rounded-3xl p-3 sm:p-6 border border-stone-200 shadow-sm flex flex-col justify-between space-y-2 sm:space-y-4 hover:border-[#D4AF37]/50 transition-all"
               >
-                <div className="space-y-3">
-                  <div className="flex items-start justify-between">
+                <div className="space-y-2 sm:space-y-3">
+                  <div className="flex items-start justify-between gap-1">
                     <div>
-                      <h3 className="font-serif text-xl font-bold text-[#1C1917]">{pkg.name}</h3>
-                      <p className="text-xs text-[#78716C] mt-1">{pkg.tagline}</p>
+                      <h3 className="font-serif text-xs sm:text-xl font-bold text-[#1C1917] truncate">{pkg.name}</h3>
+                      <p className="text-[10px] sm:text-xs text-[#78716C] mt-0.5 line-clamp-1">{pkg.tagline}</p>
                     </div>
                     {pkg.isPopular && (
-                      <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-[#D4AF37]/20 text-[#997A15]">
+                      <span className="px-1.5 py-0.5 rounded text-[8px] sm:text-[10px] uppercase font-bold bg-[#D4AF37]/20 text-[#997A15] shrink-0">
                         Popular
                       </span>
                     )}
                   </div>
 
-                  <div className="py-2 border-y border-stone-100 space-y-2 text-xs">
+                  <div className="hidden sm:block py-2 border-y border-stone-100 space-y-2 text-xs">
                     {pkg.courseHighlights?.map((course, i) => (
                       <div key={i}>
                         <strong className="text-stone-900 block">{course.title}</strong>
@@ -291,27 +291,27 @@ export const AdminMenuPage: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
-                  <span className="text-xl font-serif font-bold text-[#1C1917]">
-                    {brand.currencySymbol} {Math.round(pkg.pricePerPerson).toLocaleString()} / guest
+                <div className="pt-2 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <span className="text-xs sm:text-xl font-serif font-bold text-[#1C1917]">
+                    {brand.currencySymbol} {Math.round(pkg.pricePerPerson).toLocaleString()} <span className="text-[9px] sm:text-xs font-normal">/ guest</span>
                   </span>
                   
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => setPackageToDelete(pkg)}
-                      className="p-1.5 rounded-lg border border-stone-200 text-rose-500 hover:bg-rose-50 transition-colors"
+                      className="p-1 sm:p-1.5 rounded-lg border border-stone-200 text-rose-500 hover:bg-rose-50 transition-colors"
                       title="Delete Package"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      <Trash2 className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleOpenPackageModal(pkg)}
-                      className="flex items-center gap-1 px-3 py-1.5 rounded-lg border border-stone-200 hover:border-[#D4AF37] text-xs font-semibold text-[#1C1917] transition-colors"
+                      className="flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg border border-stone-200 hover:border-[#D4AF37] text-[10px] sm:text-xs font-semibold text-[#1C1917] transition-colors"
                     >
-                      <Edit2 className="w-3.5 h-3.5" />
+                      <Edit2 className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                       <span>Edit</span>
                     </button>
                   </div>

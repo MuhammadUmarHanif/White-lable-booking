@@ -499,63 +499,63 @@ export const AdminVenuesPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
               {halls.map((hall) => (
                 <div
                   key={hall.id}
-                  className="bg-white rounded-3xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between"
+                  className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 overflow-hidden shadow-sm flex flex-col justify-between"
                 >
-                  <div className="relative h-48 bg-stone-100">
+                  <div className="relative h-28 sm:h-48 bg-stone-100">
                     <img src={hall.images?.[0] || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80'} alt={hall.name} className="w-full h-full object-cover" />
-                    <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-[11px] font-medium flex items-center gap-1">
+                    <div className="absolute top-2 right-2 sm:top-3 sm:right-3 px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-[9px] sm:text-[11px] font-medium flex items-center gap-1">
                       <Users className="w-3 h-3 text-[#D4AF37]" />
-                      <span>{hall.minCapacity} – {hall.maxCapacity}</span>
+                      <span>{hall.minCapacity}–{hall.maxCapacity}</span>
                     </div>
                   </div>
 
-                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                     <div>
-                      <h3 className="font-serif text-lg font-bold text-[#1C1917]">{hall.name}</h3>
-                      <p className="text-xs text-[#78716C] mt-1.5 leading-relaxed">{hall.description}</p>
+                      <h3 className="font-serif text-xs sm:text-lg font-bold text-[#1C1917] truncate">{hall.name}</h3>
+                      <p className="text-[10px] sm:text-xs text-[#78716C] mt-1 leading-relaxed line-clamp-2">{hall.description}</p>
                     </div>
 
-                    <div className="space-y-2 pt-2 text-xs">
-                      <div className="flex justify-between text-[#78716C]">
-                        <span>Base Space Rental:</span>
+                    <div className="space-y-1 sm:space-y-2 pt-1 sm:pt-2 text-[10px] sm:text-xs">
+                      <div className="flex flex-col sm:flex-row sm:justify-between text-[#78716C]">
+                        <span>Space Rental:</span>
                         <span className="font-bold text-[#1C1917]">
                           {brand.currencySymbol} {Math.round(hall.baseRentalPrice).toLocaleString()}
                         </span>
                       </div>
-                      <div className="flex justify-between text-[#78716C]">
-                        <span>Min Billable Threshold:</span>
+                      <div className="flex flex-col sm:flex-row sm:justify-between text-[#78716C]">
+                        <span>Min Billable:</span>
                         <span className="font-semibold text-[#1C1917]">
                           {hall.minBillableGuests} Guests
                         </span>
                       </div>
                     </div>
 
-                    <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                      <span className={`text-[11px] font-semibold ${hall.isActive ? 'text-emerald-700' : 'text-stone-400'}`}>
-                        {hall.isActive ? 'Active on Public Site' : 'Disabled'}
+                    <div className="pt-2 sm:pt-3 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                      <span className={`text-[9px] sm:text-[11px] font-semibold ${hall.isActive ? 'text-emerald-700' : 'text-stone-400'}`}>
+                        {hall.isActive ? 'Active' : 'Disabled'}
                       </span>
                       
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <button
                           type="button"
                           onClick={() => setHallToDelete(hall)}
-                          className="p-1.5 rounded-lg border border-stone-200 text-rose-500 hover:bg-rose-50 transition-colors"
+                          className="p-1 sm:p-1.5 rounded-lg border border-stone-200 text-rose-500 hover:bg-rose-50 transition-colors"
                           title="Delete Hall"
                         >
-                          <Trash2 className="w-3.5 h-3.5" />
+                          <Trash2 className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
                         </button>
 
                         <button
                           type="button"
                           onClick={() => handleOpenEditHall(hall)}
-                          className="text-xs text-[#997A15] font-semibold hover:underline flex items-center gap-1"
+                          className="text-[10px] sm:text-xs text-[#997A15] font-semibold hover:underline flex items-center gap-0.5 sm:gap-1"
                         >
                           <Edit2 className="w-3 h-3" />
-                          <span>Edit Hall</span>
+                          <span>Edit</span>
                         </button>
                       </div>
                     </div>

@@ -55,7 +55,7 @@ export const Step2VenueSelection: React.FC<Props> = ({
       )}
 
       {/* Hall Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
         {halls.map((hall) => {
           const isSelected = state.hallId === hall.id;
           const isUnderCapacity = state.guestCount > 0 && state.guestCount < hall.minCapacity;
@@ -65,54 +65,54 @@ export const Step2VenueSelection: React.FC<Props> = ({
             <div
               key={hall.id}
               onClick={() => onChange({ hallId: hall.id })}
-              className={`relative rounded-2xl border transition-all cursor-pointer overflow-hidden flex flex-col justify-between ${
+              className={`relative rounded-xl sm:rounded-2xl border transition-all cursor-pointer overflow-hidden flex flex-col justify-between ${
                 isSelected
                   ? 'border-[#D4AF37] ring-2 ring-[#D4AF37]/80 shadow-lg bg-[#FAF8F5]'
                   : 'border-stone-200 bg-white hover:border-[#D4AF37]/50 hover:shadow-md'
               }`}
             >
               {/* Image Preview */}
-              <div className="relative h-44 w-full overflow-hidden bg-stone-100">
+              <div className="relative h-28 sm:h-44 w-full overflow-hidden bg-stone-100">
                 <img
                   src={hall.images?.[0] || 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=800&q=80'}
                   alt={hall.name}
                   className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
-                <div className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-[11px] font-medium flex items-center gap-1">
-                  <Users className="w-3 h-3 text-[#D4AF37]" />
-                  <span>{hall.minCapacity} – {hall.maxCapacity}</span>
+                <div className="absolute top-2 right-2 sm:top-3 sm:right-3 px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-[9px] sm:text-[11px] font-medium flex items-center gap-1">
+                  <Users className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-[#D4AF37]" />
+                  <span>{hall.minCapacity}–{hall.maxCapacity}</span>
                 </div>
                 {hall.isIndoor ? (
-                  <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-md bg-stone-900/80 text-[10px] text-white">
-                    Indoor Climate Control
+                  <span className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-1.5 sm:px-2 py-0.5 rounded-md bg-stone-900/80 text-[8px] sm:text-[10px] text-white">
+                    Indoor AC
                   </span>
                 ) : (
-                  <span className="absolute bottom-3 left-3 px-2 py-0.5 rounded-md bg-stone-900/80 text-[10px] text-white">
-                    Open-Air Canopy
+                  <span className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 px-1.5 sm:px-2 py-0.5 rounded-md bg-stone-900/80 text-[8px] sm:text-[10px] text-white">
+                    Open-Air
                   </span>
                 )}
               </div>
 
               {/* Card Body */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+              <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                 <div>
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-serif text-lg font-bold text-[#1C1917]">
+                  <div className="flex items-center justify-between gap-1">
+                    <h4 className="font-serif text-xs sm:text-lg font-bold text-[#1C1917] leading-tight">
                       {hall.name}
                     </h4>
                     {isSelected && (
-                      <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-white flex items-center justify-center shrink-0">
-                        <Check className="w-3.5 h-3.5" />
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#D4AF37] text-white flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                       </div>
                     )}
                   </div>
-                  <p className="text-xs text-[#78716C] mt-1.5 leading-relaxed">
+                  <p className="text-[10px] sm:text-xs text-[#78716C] mt-1 sm:mt-1.5 leading-relaxed line-clamp-2">
                     {hall.description}
                   </p>
                 </div>
 
                 {/* Amenities pills */}
-                <div className="flex flex-wrap gap-1.5 pt-2">
+                <div className="hidden sm:flex flex-wrap gap-1.5 pt-1">
                   {(hall.amenities || []).slice(0, 3).map((amenity, idx) => (
                     <span
                       key={idx}
@@ -125,23 +125,23 @@ export const Step2VenueSelection: React.FC<Props> = ({
 
                 {/* Capacity warning indicator if guests out of range */}
                 {(isUnderCapacity || isOverCapacity) && (
-                  <div className="flex items-center gap-1.5 text-[11px] text-amber-700 bg-amber-50 p-2 rounded-lg">
-                    <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                    <span>
+                  <div className="flex items-center gap-1 text-[9px] sm:text-[11px] text-amber-700 bg-amber-50 p-1.5 sm:p-2 rounded-lg">
+                    <AlertCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                    <span className="line-clamp-1">
                       {isUnderCapacity
-                        ? `Min capacity is ${hall.minCapacity}`
-                        : `Max capacity is ${hall.maxCapacity}`}
+                        ? `Min ${hall.minCapacity}`
+                        : `Max ${hall.maxCapacity}`}
                     </span>
                   </div>
                 )}
 
                 {/* Base price footer */}
-                <div className="pt-3 border-t border-stone-100 flex items-center justify-between">
-                  <span className="text-xs text-[#78716C]">
-                    {state.bookingModel === 'hall_only' ? 'Occasion Hall Rent' : 'Base Space Rental'}
+                <div className="pt-2 sm:pt-3 border-t border-stone-100 flex items-center justify-between text-[10px] sm:text-xs">
+                  <span className="text-[#78716C]">
+                    {state.bookingModel === 'hall_only' ? 'Rent' : 'Base Rent'}
                   </span>
-                  <span className="text-base font-bold text-[#1C1917]">
-                    {state.bookingModel === 'per_person_only' ? (
+                  <span className="text-xs sm:text-base font-bold text-[#1C1917]">
+                    {state.bookingModel !== 'hall_only' ? (
                       <span className="text-emerald-700 font-bold">FREE (Waived)</span>
                     ) : (
                       `${currencySymbol} ${Math.round(

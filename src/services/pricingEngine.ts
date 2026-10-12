@@ -153,37 +153,24 @@ export function calculateEventCost(
       subtotal: 0,
       notes: 'No marquee catering charges apply'
     });
-  } else if (state.bookingModel === 'per_person_only') {
-    const rate = (state.customPerPersonRate && state.customPerPersonRate > 0) ? state.customPerPersonRate : 500;
+  } else {
+    // Per-Person Catering (Hall Rent Free)
+    const pkg = menuPackages.find((p) => p.id === state.selectedPackageId) || menuPackages[0];
+    const defaultPackageRate = pkg ? pkg.pricePerPerson : 2800;
+    const rate = (state.customPerPersonRate && state.customPerPersonRate > 0)
+      ? state.customPerPersonRate
+      : defaultPackageRate;
+    const pkgName = pkg ? pkg.name : 'Shahi Dastarkhwan Feast';
     const foodSubtotal = roundToTwoDecimals(rate * billableGuests);
     foodCost += foodSubtotal;
     items.push({
-      id: 'catering-custom-rate',
-      label: `Per-Head Catering (${rate.toLocaleString()}/guest)`,
+      id: pkg ? `pkg-${pkg.id}` : 'catering-per-person',
+      label: `Catering Package: ${pkgName} (${rate.toLocaleString()}/guest)`,
       category: 'food',
       quantity: billableGuests,
       unitPrice: rate,
       pricingType: 'per_person',
       subtotal: foodSubtotal,
-      notes: rawGuests !== billableGuests ? `Billed at min ${billableGuests} guests` : undefined
-    });
-  } else {
-    // Standard / All-Inclusive booking model: Picked package with occasion configured per-person rate
-    const pkg = menuPackages.find((p) => p.id === state.selectedPackageId) || menuPackages[0];
-    const rate = (state.customPerPersonRate && state.customPerPersonRate > 0)
-      ? state.customPerPersonRate
-      : (pkg ? pkg.pricePerPerson : 2800);
-    const pkgName = pkg ? pkg.name : 'Shahi Dastarkhwan Feast';
-    const pkgSubtotal = roundToTwoDecimals(rate * billableGuests);
-    foodCost += pkgSubtotal;
-    items.push({
-      id: pkg ? `pkg-${pkg.id}` : 'pkg-shahi-standard',
-      label: `Catering Package: ${pkgName}`,
-      category: 'food',
-      quantity: billableGuests,
-      unitPrice: rate,
-      pricingType: 'per_person',
-      subtotal: pkgSubtotal,
       notes: rawGuests !== billableGuests ? `Billed at min ${billableGuests} guests` : undefined
     });
   }

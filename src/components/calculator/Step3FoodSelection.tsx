@@ -93,7 +93,7 @@ export const Step3FoodSelection: React.FC<Props> = ({
         <label className="block text-xs font-semibold uppercase tracking-wider text-[#78716C]">
           Choose a Curated Traditional Feast
         </label>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-4">
           {menuPackages.map((pkg) => {
             const isSelected = state.selectedPackageId === pkg.id;
             const linkedOccasion = PACKAGE_OCCASION_MAP[pkg.id];
@@ -109,43 +109,43 @@ export const Step3FoodSelection: React.FC<Props> = ({
                   selectedPackageId: isSelected ? null : pkg.id,
                   customPerPersonRate: isSelected ? undefined : effectivePrice
                 })}
-                className={`relative rounded-3xl p-5 border transition-all cursor-pointer flex flex-col justify-between ${
+                className={`relative rounded-2xl sm:rounded-3xl p-3 sm:p-5 border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? 'border-[#D4AF37] ring-2 ring-[#D4AF37] bg-[#FBF6E9] shadow-md'
                     : 'border-stone-200 bg-white hover:border-[#D4AF37]/50'
                 }`}
               >
                 {pkg.isPopular && (
-                  <span className="absolute -top-3 right-4 px-3 py-0.5 rounded-full text-[10px] uppercase font-bold tracking-wider gold-gradient-bg text-white shadow-sm flex items-center gap-1">
-                    <Star className="w-3 h-3 fill-current" /> Most Popular
+                  <span className="absolute -top-2.5 sm:-top-3 right-2 sm:right-4 px-2 sm:px-3 py-0.5 rounded-full text-[8px] sm:text-[10px] uppercase font-bold tracking-wider gold-gradient-bg text-white shadow-sm flex items-center gap-1">
+                    <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" /> Popular
                   </span>
                 )}
 
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="font-serif text-lg font-bold text-[#1C1917]">{pkg.name}</h4>
+                <div className="space-y-1 sm:space-y-2">
+                  <div className="flex items-center justify-between gap-1">
+                    <h4 className="font-serif text-xs sm:text-lg font-bold text-[#1C1917] leading-tight">{pkg.name}</h4>
                     {isSelected && (
-                      <div className="w-5 h-5 rounded-full bg-[#D4AF37] text-white flex items-center justify-center shrink-0">
-                        <Check className="w-3.5 h-3.5" />
+                      <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-[#D4AF37] text-white flex items-center justify-center shrink-0">
+                        <Check className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                       </div>
                     )}
                   </div>
-                  <p className="text-[11px] text-[#78716C] leading-relaxed">{pkg.tagline}</p>
+                  <p className="text-[10px] sm:text-[11px] text-[#78716C] leading-relaxed line-clamp-2">{pkg.tagline}</p>
                 </div>
 
                 {/* Highlights */}
-                <div className="my-3 space-y-2 border-y border-stone-200/60 py-2.5">
+                <div className="my-2 sm:my-3 space-y-1 sm:space-y-2 border-y border-stone-200/60 py-1.5 sm:py-2.5">
                   {pkg.courseHighlights?.map((course, idx) => (
-                    <div key={idx} className="text-[11px]">
-                      <span className="font-semibold text-[#1C1917] block">{course.title}</span>
-                      <span className="text-[#78716C] line-clamp-2">{course.items.join(' • ')}</span>
+                    <div key={idx} className="text-[10px] sm:text-[11px]">
+                      <span className="font-semibold text-[#1C1917] block leading-tight">{course.title}</span>
+                      <span className="text-[#78716C] line-clamp-1 sm:line-clamp-2">{course.items.join(' • ')}</span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between pt-1">
-                  <span className="text-xs text-[#78716C]">Per Head</span>
-                  <span className="text-lg font-serif font-bold text-[#1C1917]">
+                <div className="flex items-center justify-between pt-1 text-[10px] sm:text-xs">
+                  <span className="text-[#78716C]">Per Head</span>
+                  <span className="text-sm sm:text-lg font-serif font-bold text-[#1C1917]">
                     {currencySymbol} {Math.round(effectivePrice).toLocaleString()}
                   </span>
                 </div>
@@ -187,43 +187,43 @@ export const Step3FoodSelection: React.FC<Props> = ({
         </div>
 
         {/* Dishes Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3.5">
           {filteredDishes.map((dish) => {
             const isSelected = (state.customDishIds || []).includes(dish.id);
             return (
               <div
                 key={dish.id}
                 onClick={() => toggleDish(dish.id)}
-                className={`p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                className={`p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
                   isSelected
                     ? 'border-[#D4AF37] bg-[#FBF6E9] shadow-sm'
                     : 'border-stone-200 bg-white hover:border-[#D4AF37]/50'
                 }`}
               >
-                <div className="space-y-1 pr-2">
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-xs font-semibold text-[#1C1917]">{dish.name}</span>
+                <div className="space-y-0.5 sm:space-y-1 pr-1 flex-1 min-w-0">
+                  <div className="flex items-center gap-1">
+                    <span className="text-[11px] sm:text-xs font-semibold text-[#1C1917] truncate block">{dish.name}</span>
                     {dish.dietary?.includes('vegetarian') && (
                       <span title="Vegetarian">
-                        <Leaf className="w-3 h-3 text-emerald-600 shrink-0" />
+                        <Leaf className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-emerald-600 shrink-0" />
                       </span>
                     )}
                   </div>
-                  <span className="text-xs font-bold text-[#997A15]">
+                  <span className="text-[10px] sm:text-xs font-bold text-[#997A15] block">
                     +{currencySymbol} {Math.round(dish.pricePerPerson).toLocaleString()} / head
                   </span>
                 </div>
 
                 <button
                   type="button"
-                  className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
+                  className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
                     isSelected
                       ? 'bg-[#D4AF37] text-white'
                       : 'border border-stone-300 text-stone-500 hover:border-[#D4AF37]'
                   }`}
                   aria-label={isSelected ? 'Remove dish' : 'Add dish'}
                 >
-                  {isSelected ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+                  {isSelected ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                 </button>
               </div>
             );

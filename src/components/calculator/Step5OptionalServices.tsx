@@ -36,7 +36,7 @@ export const Step5OptionalServices: React.FC<Props> = ({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
         {optionalServices.map((srv) => {
           const isSelected = srv.isMandatory || (state.selectedServiceIds || []).includes(srv.id);
 
@@ -44,7 +44,7 @@ export const Step5OptionalServices: React.FC<Props> = ({
             <div
               key={srv.id}
               onClick={() => toggleService(srv.id, srv.isMandatory)}
-              className={`p-5 rounded-2xl border transition-all flex items-start justify-between gap-4 ${
+              className={`p-2.5 sm:p-5 rounded-xl sm:rounded-2xl border transition-all flex items-start justify-between gap-2 sm:gap-4 ${
                 srv.isMandatory
                   ? 'border-[#D4AF37]/50 bg-[#FBF6E9]/60 cursor-default'
                   : isSelected
@@ -52,17 +52,17 @@ export const Step5OptionalServices: React.FC<Props> = ({
                   : 'border-stone-200 bg-white hover:border-[#D4AF37]/50 cursor-pointer'
               }`}
             >
-              <div className="space-y-1.5 flex-1">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-semibold text-sm text-[#1C1917]">{srv.name}</h4>
+              <div className="space-y-1 sm:space-y-1.5 flex-1 min-w-0">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
+                  <h4 className="font-semibold text-xs sm:text-sm text-[#1C1917] leading-tight truncate">{srv.name}</h4>
                   {srv.isMandatory && (
-                    <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold bg-[#1C1917] text-[#D4AF37]">
-                      Venue Required
+                    <span className="px-1.5 sm:px-2 py-0.5 rounded text-[8px] sm:text-[10px] uppercase font-bold bg-[#1C1917] text-[#D4AF37]">
+                      Required
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-[#78716C] leading-relaxed">{srv.description}</p>
-                <div className="text-xs font-bold text-[#997A15] pt-1">
+                <p className="text-[10px] sm:text-xs text-[#78716C] leading-relaxed line-clamp-2 sm:line-clamp-none">{srv.description}</p>
+                <div className="text-[10px] sm:text-xs font-bold text-[#997A15] pt-0.5 sm:pt-1">
                   {srv.pricingType === 'per_person'
                     ? `+${currencySymbol} ${Math.round(srv.price).toLocaleString()} / guest`
                     : `${currencySymbol} ${Math.round(srv.price).toLocaleString()} fixed`}
@@ -70,13 +70,13 @@ export const Step5OptionalServices: React.FC<Props> = ({
               </div>
 
               <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-1 transition-colors ${
+                className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5 sm:mt-1 transition-colors ${
                   isSelected
                     ? 'bg-[#D4AF37] text-white'
                     : 'border border-stone-300 text-transparent'
                 }`}
               >
-                <Check className="w-3.5 h-3.5" />
+                <Check className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               </div>
             </div>
           );

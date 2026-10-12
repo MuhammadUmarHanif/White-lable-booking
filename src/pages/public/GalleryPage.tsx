@@ -36,8 +36,8 @@ export const GalleryPage: React.FC = () => {
         </p>
 
         {/* Filter Tabs */}
-        <div className="flex justify-center pt-4">
-          <div className="inline-flex p-1 rounded-full bg-white border border-stone-200 shadow-sm gap-1">
+        <div className="flex justify-center pt-2 sm:pt-4">
+          <div className="inline-flex flex-wrap justify-center p-1 rounded-2xl sm:rounded-full bg-white border border-stone-200 shadow-sm gap-1">
             {[
               { id: 'all', label: 'All Photographs' },
               { id: 'halls', label: 'Ballrooms & Lawns' },
@@ -47,7 +47,7 @@ export const GalleryPage: React.FC = () => {
               <button
                 key={f.id}
                 onClick={() => setFilter(f.id as any)}
-                className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${
+                className={`px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-full text-[10px] sm:text-xs font-semibold transition-all ${
                   filter === f.id
                     ? 'gold-gradient-bg text-white shadow-sm'
                     : 'text-[#57534E] hover:text-[#1C1917]'
@@ -60,8 +60,8 @@ export const GalleryPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
           {filtered.map((item, idx) => (
             <div
               key={idx}
@@ -69,18 +69,18 @@ export const GalleryPage: React.FC = () => {
                 setLightboxIndex(idx);
                 setLightboxOpen(true);
               }}
-              className="group relative h-72 rounded-3xl overflow-hidden cursor-pointer shadow-md bg-stone-100 border border-stone-200"
+              className="group relative h-40 sm:h-72 rounded-2xl sm:rounded-3xl overflow-hidden cursor-pointer shadow-md bg-stone-100 border border-stone-200"
             >
               <img
                 src={item.url}
                 alt={item.title}
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity p-6 flex flex-col justify-end">
-                <span className="text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent sm:opacity-0 sm:group-hover:opacity-100 transition-opacity p-2.5 sm:p-6 flex flex-col justify-end">
+                <span className="text-[8px] sm:text-[10px] uppercase tracking-widest text-[#D4AF37] font-bold">
                   {item.cat}
                 </span>
-                <h4 className="text-sm font-semibold text-white mt-1">{item.title}</h4>
+                <h4 className="text-[10px] sm:text-sm font-semibold text-white mt-0.5 sm:mt-1 line-clamp-2">{item.title}</h4>
               </div>
             </div>
           ))}

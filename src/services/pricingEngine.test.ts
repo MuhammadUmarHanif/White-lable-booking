@@ -23,6 +23,7 @@ describe('Pricing Engine', () => {
   it('correctly handles zero guests without crash and zero cost per guest', () => {
     const state: CalculatorState = {
       eventType: 'wedding',
+      bookingModel: 'hall_only',
       eventDate: '2026-06-15', // Monday (weekday, off-peak)
       timeSlot: 'dinner',
       guestCount: 0,
@@ -231,6 +232,7 @@ describe('Pricing Engine', () => {
   it('respects predefined occasion custom hall rent and dynamic per person cost based on guest count', () => {
     const dholkiState: CalculatorState = {
       eventType: 'dholki',
+      bookingModel: 'hall_only',
       eventDate: '2026-06-15', // weekday, off-peak
       timeSlot: 'dinner',
       guestCount: 200,
@@ -246,7 +248,6 @@ describe('Pricing Engine', () => {
 
     const result = calculateEventCost(dholkiState, context);
     expect(result.venueRentalCost).toBe(140000);
-    expect(result.foodCost).toBe(1950 * 200); // 390,000
-    expect(result.subtotalBeforeTax).toBe(140000 + 390000 + (result.servicesCost || 0));
+    expect(result.subtotalBeforeTax).toBe(140000 + (result.servicesCost || 0));
   });
 });

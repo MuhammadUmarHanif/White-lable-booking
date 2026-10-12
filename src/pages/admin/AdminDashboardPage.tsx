@@ -86,68 +86,68 @@ export const AdminDashboardPage: React.FC = () => {
       subtitle="Financial performance, booking pipelines, and verified payment collections."
     >
       {/* Financial Health Distinction Banner */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
         {/* Actual Payments Received */}
-        <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-[#78716C] text-xs">
-            <span className="font-semibold uppercase tracking-wider">Payments Collected</span>
-            <div className="w-7 h-7 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-1.5 sm:space-y-2">
+          <div className="flex items-center justify-between text-[#78716C] text-[10px] sm:text-xs">
+            <span className="font-semibold uppercase tracking-wider truncate">Payments Collected</span>
+            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-xs">
               ✓
             </div>
           </div>
-          <div className="text-2xl font-serif font-bold text-[#1C1917]">
+          <div className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917]">
             {brand.currencySymbol} {Math.round(actualPaymentsReceived).toLocaleString()}
           </div>
-          <p className="text-[11px] text-emerald-700 font-medium">
-            Actual verified deposits & payments
+          <p className="text-[9px] sm:text-[11px] text-emerald-700 font-medium truncate">
+            Actual verified deposits
           </p>
         </div>
 
         {/* Confirmed Contract Value */}
-        <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-[#78716C] text-xs">
-            <span className="font-semibold uppercase tracking-wider">Confirmed Bookings</span>
-            <div className="w-7 h-7 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center">
-              <CalendarCheck className="w-4 h-4" />
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-1.5 sm:space-y-2">
+          <div className="flex items-center justify-between text-[#78716C] text-[10px] sm:text-xs">
+            <span className="font-semibold uppercase tracking-wider truncate">Confirmed</span>
+            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center">
+              <CalendarCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-serif font-bold text-[#1C1917]">
+          <div className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917]">
             {brand.currencySymbol} {Math.round(confirmedBookingValue).toLocaleString()}
           </div>
-          <p className="text-[11px] text-blue-700 font-medium">
-            {confirmedBookings} finalized contracts
+          <p className="text-[9px] sm:text-[11px] text-blue-700 font-medium truncate">
+            {confirmedBookings} contracts
           </p>
         </div>
 
         {/* Outstanding Receivables */}
-        <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-[#78716C] text-xs">
-            <span className="font-semibold uppercase tracking-wider">Outstanding Balance</span>
-            <div className="w-7 h-7 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center">
-              <Clock className="w-4 h-4" />
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-1.5 sm:space-y-2">
+          <div className="flex items-center justify-between text-[#78716C] text-[10px] sm:text-xs">
+            <span className="font-semibold uppercase tracking-wider truncate">Outstanding</span>
+            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center">
+              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-serif font-bold text-[#1C1917]">
+          <div className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917]">
             {brand.currencySymbol} {Math.round(outstandingConfirmedBalance).toLocaleString()}
           </div>
-          <p className="text-[11px] text-amber-700 font-medium">
-            Due prior to scheduled event dates
+          <p className="text-[9px] sm:text-[11px] text-amber-700 font-medium truncate">
+            Due prior to event dates
           </p>
         </div>
 
         {/* Pipeline Potential */}
-        <div className="p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-2">
-          <div className="flex items-center justify-between text-[#78716C] text-xs">
-            <span className="font-semibold uppercase tracking-wider">Pending Enquiries</span>
-            <div className="w-7 h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center">
-              <TrendingUp className="w-4 h-4" />
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white border border-stone-200 shadow-sm space-y-1.5 sm:space-y-2">
+          <div className="flex items-center justify-between text-[#78716C] text-[10px] sm:text-xs">
+            <span className="font-semibold uppercase tracking-wider truncate">Pending</span>
+            <div className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center">
+              <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </div>
           </div>
-          <div className="text-2xl font-serif font-bold text-[#1C1917]">
+          <div className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917]">
             {pendingRequests} Requests
           </div>
-          <p className="text-[11px] text-[#78716C]">
-            {brand.currencySymbol} {Math.round(estimatedPipelineRevenue).toLocaleString()} total pipeline
+          <p className="text-[9px] sm:text-[11px] text-[#78716C] truncate">
+            {brand.currencySymbol} {Math.round(estimatedPipelineRevenue).toLocaleString()} pipeline
           </p>
         </div>
       </div>

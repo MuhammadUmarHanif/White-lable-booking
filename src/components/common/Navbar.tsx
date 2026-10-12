@@ -64,8 +64,8 @@ export const Navbar: React.FC = () => {
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
         {/* Brand Logo & Name */}
-        <Link to="/" className="flex items-center gap-3 group shrink-0">
-          <div className={`w-10 h-10 rounded-full border flex items-center justify-center font-serif text-xs font-bold tracking-widest transition-all duration-300 group-hover:scale-105 shadow-md shrink-0 overflow-hidden ${
+        <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 max-w-[calc(100%-88px)] sm:max-w-none">
+          <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center font-serif text-xs font-bold tracking-widest transition-all duration-300 group-hover:scale-105 shadow-md shrink-0 overflow-hidden ${
             isHomeTop 
               ? 'border-[#D4AF37] ring-1 ring-[#D4AF37]/50 bg-black/60 text-[#D4AF37] backdrop-blur-md'
               : 'border-[#D4AF37] ring-1 ring-[#D4AF37]/30 bg-[#1C1917] text-[#D4AF37]'
@@ -76,13 +76,13 @@ export const Navbar: React.FC = () => {
               <span>{brandInitials}</span>
             )}
           </div>
-          <div className="space-y-0.5 min-w-0">
-            <span className={`font-serif text-lg sm:text-xl font-normal tracking-[0.08em] uppercase block leading-none whitespace-nowrap transition-colors ${
+          <div className="space-y-0.5 min-w-0 flex-1">
+            <span className={`font-serif text-base sm:text-xl font-normal tracking-[0.06em] sm:tracking-[0.08em] uppercase block leading-tight truncate transition-colors ${
               isHomeTop ? 'text-white drop-shadow-md' : 'text-[#1C1917]'
             }`}>
               {brand.businessName || 'Elysian Grand'}
             </span>
-            <span className={`text-[9px] uppercase tracking-[0.25em] font-sans block whitespace-nowrap transition-colors ${
+            <span className={`text-[8px] sm:text-[9px] uppercase tracking-[0.16em] sm:tracking-[0.25em] font-sans block truncate transition-colors ${
               isHomeTop ? 'text-[#D4AF37] drop-shadow-xs' : 'text-[#997A15]'
             }`}>
               {brand.tagline || 'Shahi Marquee • Lahore'}
@@ -125,11 +125,11 @@ export const Navbar: React.FC = () => {
           </Link>
         </div>
 
-        {/* Mobile Hamburger Toggle */}
-        <div className="flex md:hidden items-center gap-2">
+        {/* Mobile Hamburger Toggle & Quick Calculator */}
+        <div className="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
           <Link
             to="/calculator"
-            className="p-2 rounded-full gold-gradient-bg text-white shadow-sm"
+            className="p-2 rounded-full gold-gradient-bg text-white shadow-sm hover:scale-105 transition-transform"
             aria-label="Cost Calculator"
           >
             <Calculator className="w-4 h-4" />

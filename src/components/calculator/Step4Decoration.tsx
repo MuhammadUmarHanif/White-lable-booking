@@ -35,7 +35,7 @@ export const Step4Decoration: React.FC<Props> = ({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
         {decorations.map((dec) => {
           const isSelected = (state.selectedDecorationIds || []).includes(dec.id);
 
@@ -43,14 +43,14 @@ export const Step4Decoration: React.FC<Props> = ({
             <div
               key={dec.id}
               onClick={() => toggleDecoration(dec.id)}
-              className={`rounded-2xl border transition-all cursor-pointer overflow-hidden flex flex-col justify-between ${
+              className={`rounded-xl sm:rounded-2xl border transition-all cursor-pointer overflow-hidden flex flex-col justify-between ${
                 isSelected
                   ? 'border-[#D4AF37] ring-2 ring-[#D4AF37] bg-[#FBF6E9] shadow-md'
                   : 'border-stone-200 bg-white hover:border-[#D4AF37]/50'
               }`}
             >
               {dec.image && (
-                <div className="h-40 w-full overflow-hidden bg-stone-100">
+                <div className="h-24 sm:h-40 w-full overflow-hidden bg-stone-100">
                   <img
                     src={dec.image}
                     alt={dec.name}
@@ -59,30 +59,30 @@ export const Step4Decoration: React.FC<Props> = ({
                 </div>
               )}
 
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+              <div className="p-2.5 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-3">
                 <div>
-                  <div className="flex items-start justify-between gap-2">
-                    <h4 className="font-serif text-base font-bold text-[#1C1917]">
+                  <div className="flex items-start justify-between gap-1">
+                    <h4 className="font-serif text-xs sm:text-base font-bold text-[#1C1917] leading-tight">
                       {dec.name}
                     </h4>
                     <div
-                      className={`w-5 h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
+                      className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${
                         isSelected ? 'bg-[#D4AF37] text-white' : 'border border-stone-300 text-transparent'
                       }`}
                     >
-                      <Check className="w-3.5 h-3.5" />
+                      <Check className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
                     </div>
                   </div>
-                  <p className="text-xs text-[#78716C] mt-1 leading-relaxed">
+                  <p className="text-[10px] sm:text-xs text-[#78716C] mt-1 leading-relaxed line-clamp-2">
                     {dec.description}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-stone-200/60 flex items-center justify-between">
-                  <span className="text-[11px] text-[#78716C] capitalize">
+                <div className="pt-2 sm:pt-3 border-t border-stone-200/60 flex items-center justify-between text-[10px] sm:text-xs">
+                  <span className="text-[#78716C] capitalize truncate pr-1">
                     {dec.category.replace('_', ' ')}
                   </span>
-                  <span className="text-sm font-bold text-[#1C1917]">
+                  <span className="text-[11px] sm:text-sm font-bold text-[#1C1917] shrink-0">
                     {dec.pricingType === 'per_person'
                       ? `+${currencySymbol} ${Math.round(dec.price).toLocaleString()} / guest`
                       : `${currencySymbol} ${Math.round(dec.price).toLocaleString()} fixed`}

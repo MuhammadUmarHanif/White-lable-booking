@@ -139,28 +139,28 @@ export const Step6CostSummary: React.FC<Props> = ({
       </div>
 
       {/* Advance Payment & Balance Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl border border-[#D4AF37]/40 bg-[#FBF6E9] flex flex-col justify-between">
-          <span className="text-xs uppercase font-bold tracking-wider text-[#997A15]">
-            Required Advance Deposit ({pricingRules.advancePaymentPercentage}%)
+      <div className="grid grid-cols-2 gap-2.5 sm:gap-4">
+        <div className="p-3 sm:p-4 rounded-xl border border-[#D4AF37]/40 bg-[#FBF6E9] flex flex-col justify-between">
+          <span className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-[#997A15] leading-tight">
+            Advance Deposit ({pricingRules.advancePaymentPercentage}%)
           </span>
-          <span className="text-2xl font-serif font-bold text-[#1C1917] mt-2">
+          <span className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917] mt-1 sm:mt-2">
             {currencySymbol} {Math.round(calculation.requiredAdvanceAmount).toLocaleString()}
           </span>
-          <span className="text-[11px] text-[#78716C] mt-1">
-            Payable upon booking confirmation to secure the date.
+          <span className="text-[9px] sm:text-[11px] text-[#78716C] mt-0.5 sm:mt-1 line-clamp-2">
+            Payable upon booking confirmation.
           </span>
         </div>
 
-        <div className="p-4 rounded-xl border border-stone-200 bg-white flex flex-col justify-between">
-          <span className="text-xs uppercase font-bold tracking-wider text-[#78716C]">
+        <div className="p-3 sm:p-4 rounded-xl border border-stone-200 bg-white flex flex-col justify-between">
+          <span className="text-[10px] sm:text-xs uppercase font-bold tracking-wider text-[#78716C] leading-tight">
             Remaining Balance
           </span>
-          <span className="text-2xl font-serif font-bold text-[#1C1917] mt-2">
+          <span className="text-sm sm:text-2xl font-serif font-bold text-[#1C1917] mt-1 sm:mt-2">
             {currencySymbol} {Math.round(calculation.remainingBalanceAmount).toLocaleString()}
           </span>
-          <span className="text-[11px] text-[#78716C] mt-1">
-            Settled prior to the event commencement.
+          <span className="text-[9px] sm:text-[11px] text-[#78716C] mt-0.5 sm:mt-1 line-clamp-2">
+            Settled prior to event day.
           </span>
         </div>
       </div>

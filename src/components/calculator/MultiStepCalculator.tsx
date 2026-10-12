@@ -46,6 +46,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
     const occ = brand.showcaseSpaces?.find((s) => s.occasion === targetType) || brand.showcaseSpaces?.[0];
     return {
       eventType: (initialState?.eventType || occ?.occasion || 'barat') as any,
+      bookingModel: initialState?.bookingModel || 'per_person_only',
       eventDate: defaultEventDate,
       timeSlot: 'dinner',
       guestCount: 500,
@@ -56,7 +57,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
       selectedDecorationIds: [], // Start without pre-selected decor so initial cost starts purely from the occasion predefined rent + catering
       selectedServiceIds: [],
       customHallRent: initialState?.customHallRent || occ?.rentPrice,
-      customPerPersonRate: initialState?.customPerPersonRate || occ?.perPersonPrice,
+      customPerPersonRate: initialState?.customPerPersonRate || occ?.perPersonPrice || 2800,
       ...initialState,
     };
   });
@@ -82,7 +83,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
           ...updates,
           hallId: occ.hallId || state.hallId,
           customHallRent: occ.rentPrice,
-          customPerPersonRate: occ.perPersonPrice,
+          customPerPersonRate: occ.perPersonPrice || 2800,
           selectedPackageId: pkgId,
         };
       } else {
@@ -136,10 +137,10 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <div className="max-w-6xl mx-auto px-2.5 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-4 sm:space-y-8">
       {/* Multi-step Header Stepper */}
-      <div className="bg-white rounded-2xl border border-stone-200 p-4 sm:p-6 shadow-sm">
-        <div className="flex items-center justify-between overflow-x-auto gap-2 pb-2 sm:pb-0">
+      <div className="bg-white rounded-2xl border border-stone-200 p-3 sm:p-6 shadow-sm">
+        <div className="flex items-center justify-between overflow-x-auto gap-2 pb-1 sm:pb-0 scrollbar-none">
           {steps.map((s) => {
             const isCompleted = currentStep > s.number;
             const isCurrent = currentStep === s.number;
@@ -148,10 +149,10 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
                 key={s.number}
                 type="button"
                 onClick={() => setCurrentStep(s.number)}
-                className="flex items-center gap-2.5 min-w-max group text-left focus:outline-none"
+                className="flex items-center gap-2 sm:gap-2.5 min-w-max group text-left focus:outline-none"
               >
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                     isCompleted
                       ? 'bg-stone-900 text-[#D4AF37]'
                       : isCurrent
@@ -159,7 +160,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
                       : 'bg-stone-100 text-[#78716C] group-hover:bg-stone-200'
                   }`}
                 >
-                  {isCompleted ? <Check className="w-4 h-4" /> : s.number}
+                  {isCompleted ? <Check className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : s.number}
                 </div>
                 <div className="hidden sm:block">
                   <span
@@ -177,7 +178,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
       </div>
 
       {/* Main Active Step Card */}
-      <div className="bg-white rounded-3xl border border-stone-200 p-6 sm:p-10 shadow-sm min-h-[520px]">
+      <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200 p-3.5 sm:p-10 shadow-sm min-h-[520px]">
         {currentStep === 1 && (
           <Step1EventDetails state={state} onChange={updateState} halls={halls} />
         )}
@@ -290,7 +291,7 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
                   <span className="text-[#D4AF37] font-semibold">
                     Catering: {brand.currencySymbol} {Math.round(calculation.foodCost).toLocaleString()}
                   </span>
-                  {' '}({brand.currencySymbol} {Math.round(calculation.costPerGuest || 500).toLocaleString()} × {state.guestCount} guests)
+                  {' '}({brand.currencySymbol} {Math.round(calculation.costPerGuest || state.customPerPersonRate || 2800).toLocaleString()} × {state.guestCount} guests)
                   {' '}+ <span className="text-emerald-400 font-semibold">Hall Rent: FREE (Rs. 0)</span>
                 </>
               ) : state.bookingModel === 'hall_only' ? (

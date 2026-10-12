@@ -240,28 +240,28 @@ export const AdminDecorationPage: React.FC = () => {
 
         {/* Décor List */}
         {activeTab === 'decor' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
             {decorations.map((d) => (
               <div
                 key={d.id}
-                className="bg-white rounded-3xl overflow-hidden border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all"
+                className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-stone-200 shadow-sm flex flex-col justify-between hover:border-[#D4AF37]/50 transition-all"
               >
                 {d.image && (
-                  <div className="h-44 bg-stone-100 overflow-hidden relative">
+                  <div className="h-28 sm:h-44 bg-stone-100 overflow-hidden relative">
                     <img src={d.image} alt={d.name} className="w-full h-full object-cover" />
-                    <span className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-[10px] uppercase font-bold tracking-wider">
+                    <span className="absolute top-2 left-2 sm:top-3 sm:left-3 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-sm text-white text-[8px] sm:text-[10px] uppercase font-bold tracking-wider">
                       {d.category.replace('_', ' ')}
                     </span>
                   </div>
                 )}
-                <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                <div className="p-3 sm:p-5 flex-1 flex flex-col justify-between space-y-2 sm:space-y-4">
                   <div>
-                    <h4 className="font-serif text-base font-bold text-[#1C1917]">{d.name}</h4>
-                    <p className="text-xs text-[#78716C] mt-1 leading-relaxed">{d.description}</p>
+                    <h4 className="font-serif text-xs sm:text-base font-bold text-[#1C1917] truncate">{d.name}</h4>
+                    <p className="text-[10px] sm:text-xs text-[#78716C] mt-1 leading-relaxed line-clamp-2">{d.description}</p>
                   </div>
 
-                  <div className="pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
-                    <span className="font-bold text-[#1C1917]">
+                  <div className="pt-2 sm:pt-3 border-t border-stone-100 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 text-xs">
+                    <span className="font-bold text-[#1C1917] text-[10px] sm:text-xs">
                       {d.pricingType === 'per_person'
                         ? `${brand.currencySymbol} ${Math.round(d.price).toLocaleString()} / guest`
                         : `${brand.currencySymbol} ${Math.round(d.price).toLocaleString()} fixed`}
