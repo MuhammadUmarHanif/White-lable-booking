@@ -1,6 +1,7 @@
 import React from 'react';
 import { CalculationResult, CalculatorState, PricingRules, Hall } from '../../types';
-import { Receipt, AlertCircle, CheckCircle2, Printer, ArrowRight, ShieldAlert, Sparkles } from 'lucide-react';
+import { Receipt, AlertCircle, CheckCircle2, Printer, ArrowRight, ShieldAlert, Sparkles, MessageCircle } from 'lucide-react';
+import { useBrand } from '../../context/BrandContext';
 
 interface Props {
   state: CalculatorState;
@@ -21,6 +22,33 @@ export const Step6CostSummary: React.FC<Props> = ({
   onProceedToBooking,
   onPrintQuotation,
 }) => {
+  const { brand } = useBrand();
+
+  const handleWhatsAppShare = () => {
+    const totalGuests = (state.guestCount || 0) + (state.childrenCount || 0);
+    const slotLabel = state.timeSlot === 'lunch' ? 'Lunch / Day' : state.timeSlot === 'dinner' ? 'Dinner / Night' : 'Full Day';
+    const message =
+      `*${brand?.name || 'Grand Royale Banquet Marquee'} — Official Event Quotation*\n\n` +
+      `• *Occasion:* ${state.eventType.toUpperCase()}\n` +
+      `• *Date:* ${state.eventDate} (${slotLabel})\n` +
+      `• *Hall Venue:* ${selectedHall?.name || 'Selected Hall'}\n` +
+      `• *Total Guests:* ${state.guestCount} Adults${state.childrenCount ? ` + ${state.childrenCount} Kids (<8 yrs)` : ''} (Total: ${totalGuests})\n` +
+      `• *Booking Mode:* ${state.bookingModel === 'hall_only' ? 'Sirf Hall (Venue Only)' : 'Per-Person Catering (Hall Rent: Rs. 0 FREE)'}\n` +
+      (state.isSegregated ? `• *Islamic Segregation (Pardah):* Yes ${calculation.segregationCost > 0 ? `(+Rs. ${Math.round(calculation.segregationCost).toLocaleString()})` : '(Complimentary / FREE)'}\n` : '') +
+      (state.hasOutsideDecorator ? `• *Outside Decorator Royalty:* Yes (+Rs. 35,000)\n` : '') +
+      `\n*FINANCIAL ESTIMATE BREAKDOWN:*\n` +
+      `• Net Subtotal: ${currencySymbol} ${Math.round(calculation.subtotalBeforeTax).toLocaleString()}\n` +
+      `• Service Charge: +${currencySymbol} ${Math.round(calculation.serviceChargeAmount).toLocaleString()}\n` +
+      `• Provincial Tax: +${currencySymbol} ${Math.round(calculation.taxAmount).toLocaleString()}\n` +
+      `--------------------------------\n` +
+      `*TOTAL ESTIMATED COST: ${currencySymbol} ${Math.round(calculation.totalEstimatedPrice).toLocaleString()}*\n` +
+      `• Advance Required (Booking): ${currencySymbol} ${Math.round(calculation.requiredAdvanceAmount).toLocaleString()}\n` +
+      `• Remaining Balance: ${currencySymbol} ${Math.round(calculation.remainingBalanceAmount).toLocaleString()}\n\n` +
+      `_Official estimate generated via ${brand?.name || 'Marquee'} System._`;
+
+    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, '_blank');
+  };
+
   return (
     <div className="space-y-8 animate-in fade-in duration-300">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-stone-200">
@@ -32,14 +60,25 @@ export const Step6CostSummary: React.FC<Props> = ({
             Complete transparent pricing calculation with real-time tax and hospitality fee schedule.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={onPrintQuotation}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-semibold text-[#1C1917] transition-colors self-start sm:self-auto"
-        >
-          <Printer className="w-4 h-4 text-[#D4AF37]" />
-          <span>Print / Export Estimate</span>
-        </button>
+        <div className="flex items-center gap-2 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={handleWhatsAppShare}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-xs font-semibold text-white shadow-xs transition-colors"
+            title="Share this quotation with family on WhatsApp"
+          >
+            <MessageCircle className="w-4 h-4" />
+            <span>Share on WhatsApp</span>
+          </button>
+          <button
+            type="button"
+            onClick={onPrintQuotation}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-xs font-semibold text-[#1C1917] transition-colors"
+          >
+            <Printer className="w-4 h-4 text-[#D4AF37]" />
+            <span>Print / Export</span>
+          </button>
+        </div>
       </div>
 
       {/* Warnings & Notes */}
@@ -128,7 +167,7 @@ export const Step6CostSummary: React.FC<Props> = ({
                 Total Estimated Price
               </span>
               <span className="text-xs text-[#997A15] font-medium">
-                {currencySymbol} {Math.round(calculation.costPerGuest).toLocaleString()} per attending guest ({state.guestCount} guests)
+                {currencySymbol} {Math.round(calculation.costPerGuest).toLocaleString()} per adult guest ({state.guestCount} adults{state.childrenCount ? ` + ${state.childrenCount} kids` : ''})
               </span>
             </div>
             <div className="text-2xl sm:text-3xl font-numeric font-bold text-[#1C1917]">

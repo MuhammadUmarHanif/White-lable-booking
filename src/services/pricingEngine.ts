@@ -140,6 +140,7 @@ export function calculateEventCost(
 
   // 3. Food & Catering Cost
   let foodCost = 0;
+  let childrenFoodCost = 0;
   if (state.bookingModel === 'hall_only') {
     // Hall only - no catering charges
     foodCost = 0;
@@ -173,6 +174,25 @@ export function calculateEventCost(
       subtotal: foodSubtotal,
       notes: rawGuests !== billableGuests ? `Billed at min ${billableGuests} guests` : undefined
     });
+
+    // Subsidized Children Catering (Under 8 Years - 50% Rate)
+    const children = Math.max(0, Math.floor(Number(state.childrenCount) || 0));
+    childrenFoodCost = 0;
+    if (children > 0) {
+      const childUnitPrice = roundToTwoDecimals(rate * 0.5);
+      childrenFoodCost = roundToTwoDecimals(childUnitPrice * children);
+      foodCost += childrenFoodCost;
+      items.push({
+        id: 'catering-children-subsidized',
+        label: `Catering: Children Under 8 Years (50% Rate @ ${childUnitPrice.toLocaleString()}/child)`,
+        category: 'food',
+        quantity: children,
+        unitPrice: childUnitPrice,
+        pricingType: 'per_person',
+        subtotal: childrenFoodCost,
+        notes: '50% family-friendly subsidized rate for younger children'
+      });
+    }
   }
 
   // Individual / Custom Add-on Dishes (only apply when not hall_only)
@@ -223,8 +243,47 @@ export function calculateEventCost(
     });
   }
 
+  // Outside Event Designer / Decorator Royalty Surcharge
+  let outsideDecoratorFee = 0;
+  if (state.hasOutsideDecorator) {
+    outsideDecoratorFee = 35000;
+    decorationCost += outsideDecoratorFee;
+    items.push({
+      id: 'decor-outside-designer-royalty',
+      label: 'Outside Event Designer / Decorator Venue Royalty & Power Fee',
+      category: 'decoration',
+      quantity: 1,
+      unitPrice: outsideDecoratorFee,
+      pricingType: 'fixed',
+      subtotal: outsideDecoratorFee,
+      notes: 'High-voltage power access, ceiling rigging, security and post-event structural cleanup'
+    });
+  }
+
   // 5. Optional & Mandatory Services Cost
   let servicesCost = 0;
+
+  // Islamic Segregation / Pardah Partition Setup
+  let segregationCost = 0;
+  if (state.isSegregated) {
+    const fee = pricingRules.partitionFee !== undefined ? Math.max(0, Number(pricingRules.partitionFee) || 0) : 0;
+    segregationCost = fee;
+    servicesCost += segregationCost;
+    items.push({
+      id: 'service-segregation-pardah',
+      label: fee > 0
+        ? 'Islamic Segregation (Pardah) Partition & Dual Buffets Setup'
+        : 'Islamic Segregation (Pardah) Partition (Complimentary / FREE)',
+      category: 'service',
+      quantity: 1,
+      unitPrice: fee,
+      pricingType: 'fixed',
+      subtotal: fee,
+      notes: fee > 0
+        ? 'Heavy acoustic soundproof divider, separate ladies hall entry, and dedicated female banquet staff'
+        : 'Complimentary / FREE setup included with marquee reservation'
+    });
+  }
   // Combine user-selected services with any mandatory services defined by the owner
   const effectiveServiceIds = new Set(state.selectedServiceIds || []);
   optionalServices.forEach((srv) => {
@@ -367,12 +426,18 @@ export function calculateEventCost(
     ? roundToTwoDecimals((selectedHall.minBillableGuests - rawGuests) * (state.selectedPackageId ? (menuPackages.find(p => p.id === state.selectedPackageId)?.pricePerPerson || 0) : 0))
     : 0;
 
+  const totalGuestsWithKids = rawGuests + (Math.max(0, Math.floor(Number(state.childrenCount) || 0)));
+
   return {
     items,
     venueRentalCost,
     foodCost,
     decorationCost,
     servicesCost,
+    childrenFoodCost,
+    segregationCost,
+    outsideDecoratorFee,
+    totalGuestsWithKids,
     minimumGuestBillAdjustment,
     weekendSurcharge,
     peakSeasonSurcharge,

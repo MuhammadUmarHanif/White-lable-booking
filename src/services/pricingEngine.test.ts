@@ -250,4 +250,64 @@ describe('Pricing Engine', () => {
     expect(result.venueRentalCost).toBe(140000);
     expect(result.subtotalBeforeTax).toBe(140000 + (result.servicesCost || 0));
   });
+
+  it('correctly calculates 50% subsidized rate for children under 8 years', () => {
+    const state: CalculatorState = {
+      eventType: 'barat',
+      bookingModel: 'per_person_only',
+      eventDate: '2026-06-16', // Tuesday
+      timeSlot: 'dinner',
+      guestCount: 400,
+      childrenCount: 50,
+      hallId: DEFAULT_HALLS[0].id,
+      isIndoorOutdoor: 'indoor',
+      selectedPackageId: DEFAULT_MENU_PACKAGES[0].id,
+      customDishIds: [],
+      selectedDecorationIds: [],
+      selectedServiceIds: [],
+      customPerPersonRate: 2000,
+    };
+
+    const result = calculateEventCost(state, context);
+    // Adult food = 400 * 2000 = 800,000
+    // Child food = 50 * (2000 * 0.5) = 50 * 1000 = 50,000
+    expect(result.foodCost).toBe(850000);
+    expect(result.childrenFoodCost).toBe(50000);
+  });
+
+  it('treats Islamic segregation as complimentary (Rs. 0) by default and applies outside decorator royalty (Rs. 35,000)', () => {
+    const state: CalculatorState = {
+      eventType: 'barat',
+      bookingModel: 'hall_only',
+      eventDate: '2026-06-16',
+      timeSlot: 'dinner',
+      guestCount: 200,
+      hallId: 'hall-1',
+      isIndoorOutdoor: 'indoor',
+      isSegregated: true,
+      hasOutsideDecorator: true,
+      selectedPackageId: null,
+      customDishIds: [],
+      selectedDecorationIds: [],
+      selectedServiceIds: [],
+    };
+
+    // 1. By default: partitionFee is 0 (FREE / Complimentary in Pakistani Marquees)
+    const resultDefault = calculateEventCost(state, context);
+    expect(resultDefault.segregationCost).toBe(0);
+    expect(resultDefault.outsideDecoratorFee).toBe(35000);
+    expect(resultDefault.decorationCost).toBe(35000);
+
+    // 2. When Admin customizes partition fee in Settings (e.g. Rs. 20,000)
+    const customContext = {
+      ...context,
+      pricingRules: {
+        ...context.pricingRules,
+        partitionFee: 20000,
+      },
+    };
+    const resultCustom = calculateEventCost(state, customContext);
+    expect(resultCustom.segregationCost).toBe(20000);
+    expect(resultCustom.servicesCost).toBeGreaterThanOrEqual(20000);
+  });
 });

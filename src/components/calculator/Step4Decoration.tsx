@@ -35,6 +35,42 @@ export const Step4Decoration: React.FC<Props> = ({
         </p>
       </div>
 
+      {/* Outside Event Designer / Decorator Royalty Option */}
+      <div className="bg-[#FAF8F5] p-3.5 sm:p-5 rounded-2xl border border-[#D4AF37]/30 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#FBF6E9] border border-[#D4AF37]/40 flex items-center justify-center text-[#997A15] shrink-0 mt-0.5">
+              <Sparkles className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-bold text-xs sm:text-sm text-[#1C1917]">
+                  Bringing an Outside Event Designer / Decorator?
+                </h4>
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase text-[#997A15] bg-[#FBF6E9] px-2 py-0.5 rounded-full border border-[#D4AF37]/30">
+                  +Rs. 35,000 Royalty Fee
+                </span>
+              </div>
+              <p className="text-[11px] sm:text-xs text-[#78716C] mt-1 leading-relaxed">
+                If hiring an external wedding planner or third-party designer, marquee charges fixed royalty covering high-voltage generator access, ceiling truss rigging, and cleanup.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange({ hasOutsideDecorator: !state.hasOutsideDecorator })}
+            className={`px-4 py-2.5 rounded-xl border font-bold text-xs transition-all shrink-0 flex items-center gap-2 self-start sm:self-auto ${
+              state.hasOutsideDecorator
+                ? 'bg-[#1C1917] text-white border-[#1C1917] shadow-sm ring-2 ring-[#D4AF37]'
+                : 'bg-white text-[#44403C] border-stone-200 hover:border-[#D4AF37]/50'
+            }`}
+          >
+            <Check className={`w-4 h-4 ${state.hasOutsideDecorator ? 'text-[#D4AF37]' : 'text-stone-300'}`} />
+            <span>{state.hasOutsideDecorator ? 'Royalty Fee Added (+35k)' : 'Bring Outside Decorator'}</span>
+          </button>
+        </div>
+      </div>
+
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
         {decorations.map((dec) => {
           const isSelected = (state.selectedDecorationIds || []).includes(dec.id);

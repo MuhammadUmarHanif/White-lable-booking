@@ -514,6 +514,7 @@ export const DEFAULT_PRICING_RULES: PricingRules = {
   peakSeasonMonths: [10, 11, 12, 1, 2, 3], // October to March (Peak Pakistani Wedding Season)
   peakSeasonSurchargePercentage: 0, // 0% default (no surprise markups)
   quotationValidityDays: 14,
+  partitionFee: 0, // 0 = Complimentary / Free Pardah Partition by default
   termsAndConditions: '1. Quotation prices are valid for 14 days from generation.\n2. Date is locked exclusively upon receipt of the 30% advance deposit.\n3. All wedding banquets must strictly comply with government closing timings (10:30 PM / 11:00 PM).\n4. 100% Halal meat is prepared in-house under strict food authority hygiene standards.\n5. Outside catering is not permitted without written authorization from management.',
   cancellationPolicy: 'Cancellations made 60+ days prior receive a 50% refund of advance paid. Within 30 days, deposit is transferable to another mutually agreed date within 6 months.',
 };

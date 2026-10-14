@@ -11,7 +11,8 @@ import {
   PricingRules, 
   BookingRequest, 
   BookingStatus, 
-  PaymentRecord 
+  PaymentRecord,
+  ContactInquiry 
 } from '../types';
 import { 
   DEFAULT_BRAND_SETTINGS, 
@@ -35,6 +36,7 @@ const LS_MENU_ITEMS = `${LS_PREFIX}menu_items`;
 const LS_DECORATIONS = `${LS_PREFIX}decorations`;
 const LS_SERVICES = `${LS_PREFIX}services`;
 const LS_BOOKINGS = `${LS_PREFIX}bookings`;
+const LS_INQUIRIES = `${LS_PREFIX}inquiries`;
 
 function getLocalOrFallback<T>(key: string, fallback: T): T {
   try {
@@ -77,14 +79,14 @@ function arrayToMap<T extends { id: string }>(arr: T[]): Record<string, T> {
 /**
  * Executes a Realtime Database query with short timeout and fallback
  */
-async function rtdbGetWithFallback<T>(path: string, fallback: T): Promise<T> {
+async function rtdbGetWithFallback<T>(path: string, fallback: T, timeoutMs: number = 1800): Promise<T> {
   if (!isFirebaseConfigured || !rtdb) {
     return fallback;
   }
 
   let timer: any;
   const timeoutPromise = new Promise<T>((resolve) => {
-    timer = setTimeout(() => resolve(fallback), 1800);
+    timer = setTimeout(() => resolve(fallback), timeoutMs);
   });
 
   try {
@@ -210,6 +212,7 @@ export async function getPricingRules(): Promise<PricingRules> {
       peakSeasonSurchargePercentage: peak,
       taxPercentage: tax,
       serviceChargePercentage: service,
+      partitionFee: r.partitionFee !== undefined ? Math.max(0, Number(r.partitionFee) || 0) : 0,
     };
   };
 
@@ -469,7 +472,34 @@ export async function createBookingRequest(
   // Realtime Database save
   rtdbSetBackground(`bookings/${id}`, newBooking);
 
+  // Instant notification to all active browser tabs
+  broadcastBookingsChange(newBooking);
+
   return newBooking;
+}
+
+export function broadcastBookingsChange(booking?: BookingRequest): void {
+  try {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('marquee:bookings-updated', { detail: booking }));
+    }
+  } catch {
+    // Ignore non-browser environments
+  }
+}
+
+export function onBookingsChanged(callback: () => void): () => void {
+  if (typeof window === 'undefined') return () => {};
+  const handleCustom = () => callback();
+  const handleStorage = (e: StorageEvent) => {
+    if (e.key === LS_BOOKINGS) callback();
+  };
+  window.addEventListener('marquee:bookings-updated', handleCustom);
+  window.addEventListener('storage', handleStorage);
+  return () => {
+    window.removeEventListener('marquee:bookings-updated', handleCustom);
+    window.removeEventListener('storage', handleStorage);
+  };
 }
 
 export async function getAllBookings(): Promise<BookingRequest[]> {
@@ -477,11 +507,19 @@ export async function getAllBookings(): Promise<BookingRequest[]> {
   const localList = getLocalOrFallback<BookingRequest[]>(LS_BOOKINGS, []);
   const cleanLocal = (localList || []).filter(isReal);
 
-  const remote = await rtdbGetWithFallback<BookingRequest[]>('bookings', cleanLocal);
+  // Fast timeout (400ms if local exists, else 1200ms) so UI never hangs
+  const timeoutMs = cleanLocal.length > 0 ? 400 : 1200;
+  const remote = await rtdbGetWithFallback<BookingRequest[]>('bookings', cleanLocal, timeoutMs);
   const cleanRemote = (remote || []).filter(isReal);
 
-  setLocal(LS_BOOKINGS, cleanRemote);
-  return cleanRemote.sort(
+  // MERGE cleanLocal and cleanRemote by ID so newest local bookings are never wiped out or lost
+  const mergedMap = new Map<string, BookingRequest>();
+  cleanRemote.forEach((b) => { if (b && b.id) mergedMap.set(b.id, b); });
+  cleanLocal.forEach((b) => { if (b && b.id) mergedMap.set(b.id, b); });
+  const merged = Array.from(mergedMap.values());
+
+  setLocal(LS_BOOKINGS, merged);
+  return merged.sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 }
@@ -492,7 +530,7 @@ export async function getBookingById(id: string): Promise<BookingRequest | null>
   const cleanLocal = (localList || []).filter(isReal);
   const localFound = cleanLocal.find((b) => b.id === id) || null;
 
-  const remote = await rtdbGetWithFallback<BookingRequest | null>(`bookings/${id}`, localFound);
+  const remote = await rtdbGetWithFallback<BookingRequest | null>(`bookings/${id}`, localFound, 600);
   if (remote && isReal(remote)) return remote;
   return localFound;
 }
@@ -561,6 +599,9 @@ export async function updateBookingStatus(
     holdExpiresAt: updatedBooking.holdExpiresAt,
   });
 
+  // Notify listeners
+  broadcastBookingsChange(updatedBooking);
+
   return { success: true };
 }
 
@@ -600,6 +641,8 @@ export async function addPaymentToBooking(
     outstandingBalance: newOutstanding,
     updatedAt: updatedBooking.updatedAt,
   });
+
+  broadcastBookingsChange(updatedBooking);
 
   return { success: true, updatedBooking };
 }
@@ -650,4 +693,62 @@ export async function resetToDefaultData(): Promise<void> {
   rtdbSetBackground('decorations', arrayToMap(DEFAULT_DECORATIONS));
   rtdbSetBackground('services', arrayToMap(DEFAULT_SERVICES));
   rtdbSetBackground('bookings', arrayToMap(DEFAULT_BOOKINGS));
+}
+
+// -------------------------------------------------------------
+// CONTACT INQUIRIES & WALKTHROUGH LEADS
+// -------------------------------------------------------------
+
+export async function getAllContactInquiries(): Promise<ContactInquiry[]> {
+  const local = getLocalOrFallback<ContactInquiry[]>(LS_INQUIRIES, []);
+  try {
+    const remote = await rtdbGetWithFallback<ContactInquiry[]>('inquiries', local);
+    return Array.isArray(remote) ? remote.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) : local;
+  } catch {
+    return local;
+  }
+}
+
+export async function createContactInquiry(
+  data: Omit<ContactInquiry, 'id' | 'referenceNumber' | 'createdAt' | 'status'>
+): Promise<ContactInquiry> {
+  const id = `inq-${Date.now()}`;
+  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+  const referenceNumber = `INQ-${new Date().getFullYear()}-${randomSuffix}`;
+  const createdAt = new Date().toISOString();
+
+  const newInquiry: ContactInquiry = {
+    ...data,
+    id,
+    referenceNumber,
+    status: 'new',
+    createdAt,
+  };
+
+  const all = getLocalOrFallback<ContactInquiry[]>(LS_INQUIRIES, []);
+  all.unshift(newInquiry);
+  setLocal(LS_INQUIRIES, all);
+
+  rtdbSetBackground(`inquiries/${id}`, newInquiry);
+
+  return newInquiry;
+}
+
+export async function updateContactInquiryStatus(
+  id: string,
+  status: ContactInquiry['status']
+): Promise<void> {
+  const all = getLocalOrFallback<ContactInquiry[]>(LS_INQUIRIES, []);
+  const updated = all.map((inq) => (inq.id === id ? { ...inq, status } : inq));
+  setLocal(LS_INQUIRIES, updated);
+
+  rtdbUpdateBackground(`inquiries/${id}`, { status });
+}
+
+export async function deleteContactInquiry(id: string): Promise<void> {
+  const all = getLocalOrFallback<ContactInquiry[]>(LS_INQUIRIES, []);
+  const updated = all.filter((inq) => inq.id !== id);
+  setLocal(LS_INQUIRIES, updated);
+
+  rtdbRemoveBackground(`inquiries/${id}`);
 }

@@ -74,6 +74,7 @@ export interface PricingRules {
   peakSeasonMonths: number[]; // e.g. [11, 12, 1, 2] (Nov-Feb)
   peakSeasonSurchargePercentage: number; // e.g. 15%
   quotationValidityDays: number; // e.g. 14 days
+  partitionFee?: number; // 0 = Free / Complimentary, or custom amount decided by Admin
   termsAndConditions: string;
   cancellationPolicy: string;
 }
@@ -146,6 +147,9 @@ export interface CalculatorState {
   isIndoorOutdoor: 'indoor' | 'outdoor' | 'both';
   customHallRent?: number;
   customPerPersonRate?: number;
+  isSegregated?: boolean; // Ladies & Gents soundproof pardah partition
+  childrenCount?: number; // Kids under 8 years billed at 50% catering rate
+  hasOutsideDecorator?: boolean; // Client bringing their own event planner / decorator
 
   // Step 2: Food
   selectedPackageId: string | null;
@@ -181,6 +185,12 @@ export interface CalculationResult {
   foodCost: number;
   decorationCost: number;
   servicesCost: number;
+  
+  // Specific Pakistani Marquee Adjustments
+  childrenFoodCost?: number;
+  segregationCost?: number;
+  outsideDecoratorFee?: number;
+  totalGuestsWithKids?: number;
   
   // Adjustments
   minimumGuestBillAdjustment: number;
@@ -263,4 +273,18 @@ export interface BookingRequest {
 
   // Expiration / Hold policy
   holdExpiresAt?: string;
+}
+
+export interface ContactInquiry {
+  id: string;
+  referenceNumber: string; // e.g. INQ-2026-1001
+  name: string;
+  phone: string;
+  email?: string;
+  eventDate?: string;
+  guestCount?: number;
+  eventType?: string;
+  message?: string;
+  status: 'new' | 'contacted' | 'booked' | 'closed';
+  createdAt: string;
 }

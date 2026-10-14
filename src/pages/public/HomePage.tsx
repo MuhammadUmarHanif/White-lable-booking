@@ -131,15 +131,6 @@ export const HomePage: React.FC = () => {
     }
   }, []);
 
-  const galleryImages = [
-    'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80',
-  ];
-
   // Fallback 4 Architectural Occasion Spaces from default settings (live editable in Admin Portal)
   const defaultSpaces: ShowcaseSpace[] = DEFAULT_BRAND_SETTINGS.showcaseSpaces || [];
 
@@ -148,72 +139,113 @@ export const HomePage: React.FC = () => {
     ? brand.showcaseSpaces
     : defaultSpaces;
 
-  // Authentic Pakistani Wedding Ceremonies Data
+  // Dynamic Gallery Images aggregated from halls, showcase spaces, and hero
+  const dynamicGalleryImages = [
+    ...(halls.flatMap((h) => h.images || [])),
+    ...(spaces.flatMap((s) => (s.images && s.images.length > 0) ? s.images : (s.image ? [s.image] : []))),
+    ...(brand.heroImages || []),
+  ].filter(Boolean);
+
+  const galleryImages = dynamicGalleryImages.length >= 4
+    ? Array.from(new Set(dynamicGalleryImages)).slice(0, 6)
+    : [
+        'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1200&q=80',
+        'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80',
+      ];
+
+  // Authentic Pakistani Wedding Ceremonies Data (dynamically integrated with owner's configured spaces)
+  const getCeremonyData = (occasion: 'barat' | 'walima' | 'mehendi' | 'nikah') => {
+    const space = spaces.find((s) => s.occasion === occasion);
+    const defaults = {
+      barat: {
+        id: 'barat',
+        name: 'The Royal Barat',
+        urdu: 'بارات',
+        tagline: 'Grand Procession & Regal Stage Entrance',
+        image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=85',
+        badge: '1,200 GUEST CAPACITY • PILLARLESS',
+        description: 'A grand 100-foot royal aisle procession led by ceremonial Punjabi dhol masters and shahi shehnai, leading to a panoramic 50ft floral throne stage with 32ft crystal chandeliers.',
+        specs: [
+          'Dedicated 100ft Royal Barat Procession Aisle',
+          'Dual 300kVA Soundproof Generator Backup',
+          'VIP Groom & Family Welcoming Lounge',
+          'Pillarless 360° Stage Sightlines for 1,200 Guests',
+        ],
+        ambience: 'Ceremonial Dhol, Warm Amber Chandelier Glow & Royal Red Velvet Carpet',
+      },
+      walima: {
+        id: 'walima',
+        name: 'The Grand Walima',
+        urdu: 'ولیمہ',
+        tagline: 'Opulent Reception & Slow-Cooked Shahi Feast',
+        image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=85',
+        badge: 'EXECUTIVE BANQUET • WHITE-GLOVE SERVICE',
+        description: 'An evening of sophisticated grandeur featuring slow-cooked Shahi Dastarkhwan delicacies, elegant round banquet tables with crystal candelabras, and certified One-Dish compliance.',
+        specs: [
+          'Slow-Cooked Mutton Roghan Josh & Live Roghani Naan',
+          'Executive White-Glove Uniformed Banquet Service',
+          'Crystal Centerpieces & Ambient Candlelit Illumination',
+          'Compliant with Punjab/Sindh Marriage Functions Law',
+        ],
+        ambience: 'Gentle Instrumental Sitar, Crystal Candelabras & Warm Ivory Linens',
+      },
+      mehendi: {
+        id: 'mehendi',
+        name: 'Mehendi & Sufi Night',
+        urdu: 'مہندی اور صوفی نائٹ',
+        tagline: 'Vibrant Floral Jhoola, Live Dholki & Qawwali Concert',
+        image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=85',
+        badge: 'OPEN-AIR & INDOOR • CONCERT SOUND',
+        description: 'Lush natural grass and botanical terrace adorned with fresh marigold garlands (Genda), fragrant Motia, ceremonial bride swing (Jhoola), live hot jalebi counters, and concert-grade acoustics.',
+        specs: [
+          'Custom Fresh Marigold & Motia Floral Jhoola',
+          'Live Hot Jalebi & Kadak Doodh Patti Chai Station',
+          'Concert-Grade Acoustic Line-Array Audio for Qawwali',
+          'Vibrant Traditional Floor Seating & Low Takht Baithak',
+        ],
+        ambience: 'Rhythmic Dhol Beats, Scent of Fresh Jasmine & Fairy-Lit Night Sky',
+      },
+      nikah: {
+        id: 'nikah',
+        name: 'Auspicious Nikah',
+        urdu: 'نکاح رسم',
+        tagline: 'Sacred Solemnity with Optional Acoustic Segregation',
+        image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
+        badge: 'SACRED PRIVACY • PARDAH SEPARATION',
+        description: 'Intimate and dignified solemnity with custom mirrored signing table, ivory floral archways, specialized soundproof Pardah segregation partitions, and ceremonial dry-fruit bid distribution.',
+        specs: [
+          'Acoustically Insulated Segregation (Pardah) Partitions',
+          'Handcrafted Mirrored Nikah Signing Table & Pen Stand',
+          'Ceremonial Dry Fruit (Bid) & Rose Water Welcome',
+          'Dedicated Private Family Prayer & Dua Sanctuary',
+        ],
+        ambience: 'Soft Attar Fragrance, Serene Quranic Recitation & Intimate Royal Dignity',
+      },
+    }[occasion];
+
+    if (!space) return defaults;
+    return {
+      id: occasion,
+      name: space.title || defaults.name,
+      urdu: defaults.urdu,
+      tagline: space.subtitle || defaults.tagline,
+      image: space.image || (space.images && space.images[0]) || defaults.image,
+      badge: space.badge || defaults.badge,
+      description: space.description || defaults.description,
+      specs: (space.highlights && space.highlights.length > 0) ? space.highlights : defaults.specs,
+      ambience: defaults.ambience,
+    };
+  };
+
   const ceremonies = {
-    barat: {
-      id: 'barat',
-      name: 'The Royal Barat',
-      urdu: 'بارات',
-      tagline: 'Grand Procession & Regal Stage Entrance',
-      image: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=85',
-      badge: '1,200 GUEST CAPACITY • PILLARLESS',
-      description: 'A grand 100-foot royal aisle procession led by ceremonial Punjabi dhol masters and shahi shehnai, leading to a panoramic 50ft floral throne stage with 32ft crystal chandeliers.',
-      specs: [
-        'Dedicated 100ft Royal Barat Procession Aisle',
-        'Dual 300kVA Soundproof Generator Backup',
-        'VIP Groom & Family Welcoming Lounge',
-        'Pillarless 360° Stage Sightlines for 1,200 Guests',
-      ],
-      ambience: 'Ceremonial Dhol, Warm Amber Chandelier Glow & Royal Red Velvet Carpet',
-    },
-    walima: {
-      id: 'walima',
-      name: 'The Grand Walima',
-      urdu: 'ولیمہ',
-      tagline: 'Opulent Reception & Slow-Cooked Shahi Feast',
-      image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=85',
-      badge: 'EXECUTIVE BANQUET • WHITE-GLOVE SERVICE',
-      description: 'An evening of sophisticated grandeur featuring slow-cooked Shahi Dastarkhwan delicacies, elegant round banquet tables with crystal candelabras, and certified One-Dish compliance.',
-      specs: [
-        'Slow-Cooked Mutton Roghan Josh & Live Roghani Naan',
-        'Executive White-Glove Uniformed Banquet Service',
-        'Crystal Centerpieces & Ambient Candlelit Illumination',
-        'Compliant with Punjab/Sindh Marriage Functions Law',
-      ],
-      ambience: 'Gentle Instrumental Sitar, Crystal Candelabras & Warm Ivory Linens',
-    },
-    mehendi: {
-      id: 'mehendi',
-      name: 'Mehendi & Sufi Night',
-      urdu: 'مہندی اور صوفی نائٹ',
-      tagline: 'Vibrant Floral Jhoola, Live Dholki & Qawwali Concert',
-      image: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=85',
-      badge: 'OPEN-AIR & INDOOR • CONCERT SOUND',
-      description: 'Lush natural grass and botanical terrace adorned with fresh marigold garlands (Genda), fragrant Motia, ceremonial bride swing (Jhoola), live hot jalebi counters, and concert-grade acoustics.',
-      specs: [
-        'Custom Fresh Marigold & Motia Floral Jhoola',
-        'Live Hot Jalebi & Kadak Doodh Patti Chai Station',
-        'Concert-Grade Acoustic Line-Array Audio for Qawwali',
-        'Vibrant Traditional Floor Seating & Low Takht Baithak',
-      ],
-      ambience: 'Rhythmic Dhol Beats, Scent of Fresh Jasmine & Fairy-Lit Night Sky',
-    },
-    nikah: {
-      id: 'nikah',
-      name: 'Auspicious Nikah',
-      urdu: 'نکاح رسم',
-      tagline: 'Sacred Solemnity with Optional Acoustic Segregation',
-      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=85',
-      badge: 'SACRED PRIVACY • PARDAH SEPARATION',
-      description: 'Intimate and dignified solemnity with custom mirrored signing table, ivory floral archways, specialized soundproof Pardah segregation partitions, and ceremonial dry-fruit bid distribution.',
-      specs: [
-        'Acoustically Insulated Segregation (Pardah) Partitions',
-        'Handcrafted Mirrored Nikah Signing Table & Pen Stand',
-        'Ceremonial Dry Fruit (Bid) & Rose Water Welcome',
-        'Dedicated Private Family Prayer & Dua Sanctuary',
-      ],
-      ambience: 'Soft Attar Fragrance, Serene Quranic Recitation & Intimate Royal Dignity',
-    },
+    barat: getCeremonyData('barat'),
+    walima: getCeremonyData('walima'),
+    mehendi: getCeremonyData('mehendi'),
+    nikah: getCeremonyData('nikah'),
   };
 
   const testimonials = [

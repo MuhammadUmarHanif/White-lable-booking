@@ -58,6 +58,9 @@ export const MultiStepCalculator: React.FC<Props> = ({ initialState, onComplete 
       selectedServiceIds: [],
       customHallRent: initialState?.customHallRent || occ?.rentPrice,
       customPerPersonRate: initialState?.customPerPersonRate || occ?.perPersonPrice || 2800,
+      childrenCount: initialState?.childrenCount || 0,
+      isSegregated: initialState?.isSegregated || false,
+      hasOutsideDecorator: initialState?.hasOutsideDecorator || false,
       ...initialState,
     };
   });

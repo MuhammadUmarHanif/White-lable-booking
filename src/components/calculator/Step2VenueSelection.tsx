@@ -33,19 +33,19 @@ export const Step2VenueSelection: React.FC<Props> = ({
       </div>
 
       {/* Seasonal & Weekend Notice Banner */}
-      {(isWeekend || isPeak) && (
+      {((isWeekend && pricingRules.weekendSurchargePercentage > 0) || (isPeak && pricingRules.peakSeasonSurchargePercentage > 0)) && (
         <div className="p-4 rounded-xl bg-[#FBF6E9] border border-[#D4AF37]/40 flex items-start gap-3">
           <Info className="w-5 h-5 text-[#997A15] shrink-0 mt-0.5" />
           <div className="text-xs text-[#57534E] space-y-1">
             <span className="font-semibold text-[#1C1917] block">
               Active Date Rules Applied to Estimate
             </span>
-            {isWeekend && (
+            {isWeekend && pricingRules.weekendSurchargePercentage > 0 && (
               <p>
                 • Your selected date is a weekend. A {pricingRules.weekendSurchargePercentage}% premium applies for priority weekend banquet coordination.
               </p>
             )}
-            {isPeak && (
+            {isPeak && pricingRules.peakSeasonSurchargePercentage > 0 && (
               <p>
                 • Your selected date falls within the peak wedding season. A {pricingRules.peakSeasonSurchargePercentage}% peak demand rate applies.
               </p>

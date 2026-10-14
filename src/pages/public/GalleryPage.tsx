@@ -1,23 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useBrand } from '../../context/BrandContext';
 import { Lightbox } from '../../components/common/Lightbox';
-import { Camera } from 'lucide-react';
+import { Camera, Sparkles } from 'lucide-react';
 
 export const GalleryPage: React.FC = () => {
+  const { brand, halls, decorations, menuItems } = useBrand();
   const [filter, setFilter] = useState<'all' | 'halls' | 'banquets' | 'stages'>('all');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
-  const images = [
-    { url: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1200&q=80', cat: 'halls', title: 'The Mughal Shahi Grand Ballroom Chandelier Canopy' },
-    { url: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80', cat: 'halls', title: 'The Crystal Glasshouse Marquee & Italian Fountains' },
-    { url: 'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=1200&q=80', cat: 'stages', title: 'Shahi Barat Floral Stage with Deep Red Roses & Candelabras' },
-    { url: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80', cat: 'stages', title: 'Walima Pastel Floral Backdrop & Royal Velvet Sofa' },
-    { url: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80', cat: 'banquets', title: 'Live Charcoal BBQ, Shinwari Sajji & Degi Biryani Hot Station' },
-    { url: 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1200&q=80', cat: 'banquets', title: 'Royal Shahi Dastarkhwan Cutlery, Bone China & Brass Thalis' },
-    { url: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?auto=format&fit=crop&w=1200&q=80', cat: 'halls', title: 'Royal Jasmine Open-Air Lawn with Fairy Lights for Mehendi' },
-    { url: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?auto=format&fit=crop&w=1200&q=80', cat: 'stages', title: 'Genda Phool & Motia Fragrant Walkway Tunnel for Baraat Entry' },
-  ];
+  // Dynamically assemble all marquee photos from active database (halls, decor, spaces, hero)
+  const images = useMemo(() => {
+    const list: { url: string; cat: 'halls' | 'stages' | 'banquets'; title: string }[] = [];
+    const seenUrls = new Set<string>();
+
+    const addPhoto = (url: string | undefined, cat: 'halls' | 'stages' | 'banquets', title: string) => {
+      if (!url || seenUrls.has(url)) return;
+      seenUrls.add(url);
+      list.push({ url, cat, title });
+    };
+
+    // 1. Halls
+    halls.forEach((h) => {
+      (h.images || []).forEach((img, idx) => {
+        addPhoto(img, 'halls', `${h.name} — Luxury Architecture & Chandelier Setup`);
+      });
+    });
+
+    // 2. Showcase Spaces
+    (brand.showcaseSpaces || []).forEach((s) => {
+      const allImgs = (s.images && s.images.length > 0) ? s.images : (s.image ? [s.image] : []);
+      allImgs.forEach((img) => {
+        const cat = (s.occasion === 'barat' || s.occasion === 'walima') ? 'halls' : 'stages';
+        addPhoto(img, cat, `${s.title} — ${s.badge}`);
+      });
+    });
+
+    // 3. Decorations
+    decorations.forEach((d) => {
+      if (d.image) {
+        addPhoto(d.image, 'stages', `${d.name} (${d.category.replace('_', ' ')})`);
+      }
+    });
+
+    // 4. Culinary & Banquets
+    menuItems.forEach((m) => {
+      if (m.image) {
+        addPhoto(m.image, 'banquets', `${m.name}`);
+      }
+    });
+
+    // 5. Brand Hero Images
+    (brand.heroImages || []).forEach((img, i) => {
+      addPhoto(img, 'halls', `${brand.businessName} — Main Foyer`);
+    });
+
+    // Fallback high-res Pakistani wedding banquet photos if any category is sparse
+    const defaultBanquets = [
+      { url: 'https://images.unsplash.com/photo-1555244162-803834f70033?auto=format&fit=crop&w=1200&q=80', cat: 'banquets' as const, title: 'Live Charcoal BBQ, Shinwari Sajji & Degi Biryani' },
+      { url: 'https://images.unsplash.com/photo-1545232979-8bf68ee9b1af?auto=format&fit=crop&w=1200&q=80', cat: 'banquets' as const, title: 'Royal Shahi Dastarkhwan Cutlery, Bone China & Brass Thalis' },
+      { url: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80', cat: 'banquets' as const, title: 'Authentic Degi Awadhi Mutton & Clay Pot Live Station' },
+    ];
+    defaultBanquets.forEach((item) => addPhoto(item.url, item.cat, item.title));
+
+    return list;
+  }, [brand, halls, decorations, menuItems]);
 
   const filtered = filter === 'all' ? images : images.filter((img) => img.cat === filter);
 

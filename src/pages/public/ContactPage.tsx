@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useBrand } from '../../context/BrandContext';
+import { createContactInquiry } from '../../services/firebaseService';
+import { ContactInquiry } from '../../types';
 import { 
   MapPin, 
   Phone, 
@@ -8,20 +10,47 @@ import {
   MessageCircle, 
   CheckCircle2, 
   Sparkles, 
-  Send 
+  Send,
+  Loader2
 } from 'lucide-react';
 
 export const ContactPage: React.FC = () => {
   const { brand } = useBrand();
-  const [submitted, setSubmitted] = useState(false);
+  const [submittedInquiry, setSubmittedInquiry] = useState<ContactInquiry | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [city, setCity] = useState('Lahore');
+  const [eventType, setEventType] = useState('Barat');
   const [date, setDate] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (!name.trim() || !phone.trim()) {
+      setErrorMsg('Please enter your name and contact phone number.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      setErrorMsg(null);
+      const newInquiry = await createContactInquiry({
+        name,
+        phone,
+        eventDate: date,
+        eventType,
+        message: `City: ${city}. Notes: ${message}`,
+      });
+      setSubmittedInquiry(newInquiry);
+    } catch (err: any) {
+      console.error('Failed to submit walkthrough inquiry:', err);
+      setErrorMsg(err.message || 'Failed to submit inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -119,18 +148,37 @@ export const ContactPage: React.FC = () => {
 
           {/* Right Form (7 cols) */}
           <div className="lg:col-span-7 bg-white rounded-3xl p-8 sm:p-10 border border-stone-200 shadow-sm">
-            {submitted ? (
-              <div className="text-center py-12 space-y-5">
+            {submittedInquiry ? (
+              <div className="text-center py-10 space-y-5 animate-in fade-in duration-300">
                 <div className="w-16 h-16 rounded-full gold-gradient-bg text-white flex items-center justify-center mx-auto shadow-lg">
                   <CheckCircle2 className="w-8 h-8" />
                 </div>
-                <h3 className="font-serif text-2xl font-bold text-[#1C1917]">
-                  Tour Request Received
-                </h3>
-                <p className="text-xs sm:text-sm text-[#78716C] max-w-md mx-auto">
-                  Thank you, <strong>{name}</strong>. A dedicated event director will phone you shortly to confirm your private walkthrough date.
+                <div className="space-y-1">
+                  <span className="text-xs uppercase font-bold tracking-widest text-[#997A15]">
+                    Inquiry Reference: {submittedInquiry.referenceNumber}
+                  </span>
+                  <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#1C1917]">
+                    Walkthrough Inquiry Recorded!
+                  </h3>
+                </div>
+                <p className="text-xs sm:text-sm text-[#78716C] max-w-md mx-auto leading-relaxed">
+                  Thank you, <strong>{submittedInquiry.name}</strong>. Your inquiry for <strong>{submittedInquiry.eventType}</strong> has been logged in our reservation directory. A senior banquet director will phone you shortly at <strong>{submittedInquiry.phone}</strong>.
                 </p>
-                <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+
+                {/* Instant WhatsApp Direct Connect */}
+                <div className="pt-2">
+                  <a
+                    href={`https://wa.me/${brand.whatsappNumber}?text=${encodeURIComponent(`Assalam-o-Alaikum, I submitted private tour inquiry Ref: ${submittedInquiry.referenceNumber} for ${submittedInquiry.eventType}. My name is ${submittedInquiry.name}.`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition-all hover:scale-105"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>Send Inquiry Details via WhatsApp Directly</span>
+                  </a>
+                </div>
+
+                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
                   <a
                     href="/calculator"
                     className="px-6 py-3 rounded-full text-xs font-semibold uppercase tracking-wider text-white gold-gradient-bg shadow-md hover:scale-105 transition-transform"
@@ -140,7 +188,7 @@ export const ContactPage: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => {
-                      setSubmitted(false);
+                      setSubmittedInquiry(null);
                       setName('');
                       setPhone('');
                       setDate('');
@@ -161,9 +209,15 @@ export const ContactPage: React.FC = () => {
                   Please allow us 2 hours for a comprehensive walkthrough including hall acoustic testing, bridal suite tour, and culinary tasting consultations.
                 </p>
 
+                {errorMsg && (
+                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs">
+                    {errorMsg}
+                  </div>
+                )}
+
                 <div className="space-y-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-[#78716C]">
-                    Host Full Name
+                    Host Full Name *
                   </label>
                   <input
                     type="text"
@@ -178,7 +232,7 @@ export const ContactPage: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
                     <label className="block text-xs font-semibold uppercase tracking-wider text-[#78716C]">
-                      WhatsApp / Mobile Contact
+                      WhatsApp / Mobile Contact *
                     </label>
                     <input
                       type="tel"
@@ -195,8 +249,9 @@ export const ContactPage: React.FC = () => {
                       City of Residence
                     </label>
                     <select
+                      value={city}
+                      onChange={(e) => setCity(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-white"
-                      defaultValue="Lahore"
                     >
                       <option value="Lahore">Lahore</option>
                       <option value="Islamabad">Islamabad</option>
@@ -219,7 +274,6 @@ export const ContactPage: React.FC = () => {
                     </label>
                     <input
                       type="date"
-                      required
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37]"
@@ -231,8 +285,9 @@ export const ContactPage: React.FC = () => {
                       Wedding Function Type
                     </label>
                     <select
+                      value={eventType}
+                      onChange={(e) => setEventType(e.target.value)}
                       className="w-full px-4 py-3 rounded-xl border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#D4AF37] bg-white"
-                      defaultValue="Barat"
                     >
                       <option value="Barat">Royal Barat Ceremony</option>
                       <option value="Walima">Walima Reception</option>
@@ -259,14 +314,25 @@ export const ContactPage: React.FC = () => {
 
                 <button
                   type="submit"
-                  className="w-full py-4 rounded-full text-xs font-bold uppercase tracking-widest text-white gold-gradient-bg shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2"
+                  disabled={isSubmitting}
+                  className="w-full py-4 rounded-full text-xs font-bold uppercase tracking-widest text-white gold-gradient-bg shadow-md hover:scale-[1.01] transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Send className="w-4 h-4" />
-                  <span>Submit Tour Request</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Recording Inquiry...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Submit Tour Request</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}
           </div>
+
         </div>
       </div>
     </div>

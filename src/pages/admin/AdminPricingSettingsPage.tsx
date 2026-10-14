@@ -209,6 +209,41 @@ export const AdminPricingSettingsPage: React.FC = () => {
                   </p>
                 )}
               </div>
+
+              <div>
+                <div className="flex items-center justify-between">
+                  <label className="block font-semibold uppercase text-[#78716C]">
+                    Pardah / Islamic Partition Setup Fee (Rs.)
+                  </label>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${
+                    Number(formData.partitionFee || 0) === 0
+                      ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                      : 'text-[#997A15] bg-[#FBF6E9] border-[#D4AF37]/40'
+                  }`}>
+                    {Number(formData.partitionFee || 0) === 0 ? 'Complimentary / FREE (Rs. 0)' : `Rs. ${Number(formData.partitionFee).toLocaleString()}`}
+                  </span>
+                </div>
+                <div className="relative mt-1">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={formData.partitionFee !== undefined ? formData.partitionFee : 0}
+                    onChange={(e) => {
+                      const val = Math.max(0, parseFloat(e.target.value) || 0);
+                      setFormData({ ...formData, partitionFee: val });
+                    }}
+                    placeholder="0"
+                    className="w-full px-4 py-2.5 rounded-xl border border-stone-200 font-bold"
+                  />
+                  <span className="text-xs text-stone-400 absolute right-3.5 top-1/2 -translate-y-1/2 font-bold">
+                    PKR
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#A8A29E] mt-1">
+                  Set to <strong>0</strong> for <strong>Free / Complimentary</strong> Pardah setup, or enter custom rupee fee if charging.
+                </p>
+              </div>
             </div>
           </div>
 

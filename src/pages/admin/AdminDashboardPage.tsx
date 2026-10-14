@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { BookingRequest } from '../../types';
-import { getAllBookings } from '../../services/firebaseService';
+import { getAllBookings, getAllContactInquiries, onBookingsChanged } from '../../services/firebaseService';
 import { useBrand } from '../../context/BrandContext';
 import { 
   CalendarCheck, 
@@ -27,18 +27,32 @@ export const AdminDashboardPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [chartPeriod, setChartPeriod] = useState<'all' | 'recent'>('all');
 
+  const [inquiriesCount, setInquiriesCount] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchBookings = async () => {
     setIsRefreshing(true);
-    const data = await getAllBookings();
-    setBookings(data);
-    setLoading(false);
-    setIsRefreshing(false);
+    try {
+      const [data, inqs] = await Promise.all([
+        getAllBookings(),
+        getAllContactInquiries(),
+      ]);
+      setBookings(data);
+      setInquiriesCount(inqs.length);
+    } catch (err) {
+      console.error('Failed to load dashboard data:', err);
+    } finally {
+      setLoading(false);
+      setIsRefreshing(false);
+    }
   };
 
   useEffect(() => {
     fetchBookings();
+    const unsub = onBookingsChanged(() => {
+      fetchBookings();
+    });
+    return () => unsub();
   }, []);
 
   // Compute key executive metrics
@@ -66,19 +80,36 @@ export const AdminDashboardPage: React.FC = () => {
     .filter((b) => b.status === 'confirmed')
     .reduce((sum, b) => sum + (b.outstandingBalance || 0), 0);
 
-  // Generate chart data by month depending on period
-  const allMonthsData = [
-    { month: 'Jun', received: actualPaymentsReceived * 0.15, confirmed: confirmedBookingValue * 0.18, estimated: estimatedPipelineRevenue * 0.2 },
-    { month: 'Jul', received: actualPaymentsReceived * 0.2, confirmed: confirmedBookingValue * 0.22, estimated: estimatedPipelineRevenue * 0.25 },
-    { month: 'Aug', received: actualPaymentsReceived * 0.25, confirmed: confirmedBookingValue * 0.28, estimated: estimatedPipelineRevenue * 0.3 },
-    { month: 'Sep', received: actualPaymentsReceived * 0.35, confirmed: confirmedBookingValue * 0.38, estimated: estimatedPipelineRevenue * 0.4 },
-    { month: 'Oct', received: actualPaymentsReceived, confirmed: confirmedBookingValue, estimated: estimatedPipelineRevenue },
-    { month: 'Nov', received: actualPaymentsReceived * 1.25, confirmed: confirmedBookingValue * 1.3, estimated: estimatedPipelineRevenue * 1.4 },
-  ];
+  // Generate dynamic chart data by month strictly computed from active bookings
+  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const now = new Date();
+  const windowCount = chartPeriod === 'recent' ? 4 : 6;
+  const windowMonths: { key: string; label: string }[] = [];
+  for (let i = windowCount - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
+    const mIdx = d.getMonth();
+    const yr = d.getFullYear();
+    const key = `${yr}-${String(mIdx + 1).padStart(2, '0')}`;
+    windowMonths.push({ key, label: monthNames[mIdx] });
+  }
 
-  const monthlyRevenueData = chartPeriod === 'recent'
-    ? allMonthsData.slice(3)
-    : allMonthsData;
+  const monthlyRevenueData = windowMonths.map(({ key, label }) => {
+    const monthBookings = bookings.filter((b) => b.eventDate && b.eventDate.startsWith(key));
+    const received = monthBookings.reduce((sum, b) => sum + (b.totalPaid || 0), 0);
+    const confirmed = monthBookings
+      .filter((b) => b.status === 'confirmed' || b.status === 'completed')
+      .reduce((sum, b) => sum + (b.totalQuotationAmount || 0), 0);
+    const estimated = monthBookings
+      .filter((b) => b.status !== 'cancelled' && b.status !== 'rejected')
+      .reduce((sum, b) => sum + (b.totalQuotationAmount || 0), 0);
+
+    return {
+      month: label,
+      received,
+      confirmed,
+      estimated,
+    };
+  });
 
   return (
     <AdminLayout

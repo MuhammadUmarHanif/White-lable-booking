@@ -1,6 +1,6 @@
 import React from 'react';
 import { CalculatorState, TimeSlot, Hall } from '../../types';
-import { Calendar, Users, Clock, Building2, Sun, ShieldCheck, CheckCircle2, Sparkles, Utensils } from 'lucide-react';
+import { Calendar, Users, Clock, Building2, Sun, ShieldCheck, CheckCircle2, Sparkles, Utensils, Baby, Layers } from 'lucide-react';
 
 import { useBrand } from '../../context/BrandContext';
 
@@ -11,7 +11,8 @@ interface Props {
 }
 
 export const Step1EventDetails: React.FC<Props> = ({ state, onChange, halls }) => {
-  const { brand } = useBrand();
+  const { brand, pricingRules } = useBrand();
+  const partitionFee = pricingRules?.partitionFee !== undefined ? Math.max(0, Number(pricingRules.partitionFee) || 0) : 0;
 
   const eventTypes = [
     { id: 'barat', label: 'Barat (Wedding Procession & Feast)', tag: 'Grand Wedding' },
@@ -190,7 +191,7 @@ export const Step1EventDetails: React.FC<Props> = ({ state, onChange, halls }) =
       </div>
 
       {/* Date & Guest Count Row */}
-      <div className="grid grid-cols-2 gap-2.5 sm:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-6">
         {/* Event Date */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#78716C]">
@@ -205,15 +206,15 @@ export const Step1EventDetails: React.FC<Props> = ({ state, onChange, halls }) =
             className="w-full px-2.5 sm:px-4 py-2 sm:py-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
           />
           <p className="text-[9px] sm:text-[11px] text-[#A8A29E] hidden sm:block">
-            Friday, Saturday, and Sunday banquets apply priority weekend staffing rates.
+            Fri, Sat, and Sun banquets apply priority weekend staffing rates.
           </p>
         </div>
 
-        {/* Expected Guests */}
+        {/* Expected Adult Guests */}
         <div className="space-y-1.5 sm:space-y-2">
           <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#78716C]">
             <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37]" />
-            <span>Expected Guests</span>
+            <span>Adult Guests (Full Rate)</span>
           </label>
           <div className="relative">
             <input
@@ -227,7 +228,7 @@ export const Step1EventDetails: React.FC<Props> = ({ state, onChange, halls }) =
               className="w-full px-2.5 sm:px-4 py-2 sm:py-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
             />
             <span className="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-[#A8A29E] font-medium">
-              Guests
+              Adults
             </span>
           </div>
           {selectedHall && (
@@ -235,6 +236,77 @@ export const Step1EventDetails: React.FC<Props> = ({ state, onChange, halls }) =
               {selectedHall.name}: {selectedHall.minCapacity}–{selectedHall.maxCapacity} cap.
             </p>
           )}
+        </div>
+
+        {/* Children Under 8 Years (50% Rate) */}
+        <div className="space-y-1.5 sm:space-y-2">
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-[#78716C]">
+              <Baby className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#D4AF37]" />
+              <span>Children (&lt;8 Yrs)</span>
+            </label>
+            <span className="text-[9px] font-bold uppercase text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+              50% Rate
+            </span>
+          </div>
+          <div className="relative">
+            <input
+              type="number"
+              min="0"
+              max="500"
+              step="5"
+              value={state.childrenCount || ''}
+              onChange={(e) => onChange({ childrenCount: Math.max(0, parseInt(e.target.value, 10) || 0) })}
+              placeholder="0"
+              className="w-full px-2.5 sm:px-4 py-2 sm:py-3 rounded-xl border border-stone-200 bg-white text-xs sm:text-sm text-[#1C1917] focus:outline-none focus:ring-2 focus:ring-[#D4AF37] transition-all"
+            />
+            <span className="absolute right-2.5 sm:right-4 top-1/2 -translate-y-1/2 text-[10px] sm:text-xs text-[#A8A29E] font-medium">
+              Kids
+            </span>
+          </div>
+          <p className="text-[9px] sm:text-[11px] text-[#78716C] truncate hidden sm:block">
+            50% food rate for children under 8.
+          </p>
+        </div>
+      </div>
+
+      {/* Pardah / Islamic Segregation Setup */}
+      <div className="bg-[#FAF8F5] p-3.5 sm:p-5 rounded-2xl border border-[#D4AF37]/30 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#FBF6E9] border border-[#D4AF37]/40 flex items-center justify-center text-[#997A15] shrink-0 mt-0.5">
+              <Layers className="w-5 h-5 text-[#D4AF37]" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h4 className="font-bold text-xs sm:text-sm text-[#1C1917]">
+                  Pardah / Islamic Segregation (Ladies & Gents Partition)
+                </h4>
+                <span className={`text-[9px] sm:text-[10px] font-bold uppercase px-2 py-0.5 rounded-full border ${
+                  partitionFee === 0
+                    ? 'text-emerald-700 bg-emerald-50 border-emerald-200'
+                    : 'text-[#997A15] bg-[#FBF6E9] border-[#D4AF37]/30'
+                }`}>
+                  {partitionFee === 0 ? 'Complimentary / FREE (Rs. 0)' : `+Rs. ${partitionFee.toLocaleString()} Setup`}
+                </span>
+              </div>
+              <p className="text-[11px] sm:text-xs text-[#78716C] mt-1 leading-relaxed">
+                Includes acoustic soundproof wall dividers, separate ladies entrance, dual buffet lanes, and dedicated female banquet service staff{partitionFee === 0 ? ' (Free / Complimentary setup).' : ` (+Rs. ${partitionFee.toLocaleString()} setup fee).`}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onChange({ isSegregated: !state.isSegregated })}
+            className={`px-4 py-2.5 rounded-xl border font-bold text-xs transition-all shrink-0 flex items-center gap-2 self-start sm:self-auto ${
+              state.isSegregated
+                ? 'bg-[#1C1917] text-white border-[#1C1917] shadow-sm ring-2 ring-[#D4AF37]'
+                : 'bg-white text-[#44403C] border-stone-200 hover:border-[#D4AF37]/50'
+            }`}
+          >
+            <CheckCircle2 className={`w-4 h-4 ${state.isSegregated ? 'text-[#D4AF37]' : 'text-stone-300'}`} />
+            <span>{state.isSegregated ? 'Pardah Partition Added' : 'Add Pardah Partition'}</span>
+          </button>
         </div>
       </div>
 
